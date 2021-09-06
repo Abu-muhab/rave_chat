@@ -6,9 +6,9 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".LoginFragment">
+        tools:context=".SignupFragment">
         <LinearLayout
-            android:id="@+id/login_container"
+            android:id="@+id/signup_container"
             android:clickable="true"
             android:focusable="true"
             android:layout_width="match_parent"
@@ -40,21 +40,64 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="50dp">
+                android:padding="50dp"
+                tools:context=".SignupFragment">
 
+
+                <TextView
+                    android:id="@+id/signupText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary"
+                    android:text="Sign up"
+                    android:textSize="30sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primary"
-                    android:text="Login"
-                    android:textSize="30sp"/>
+                    android:layout_marginBottom="30dp"
+                    android:paddingTop="20dp"
+                    android:textColor="@color/primary_light"
+                    android:text="Create an account to start chatting with your friends and family" />
+
+                <LinearLayout
+                    android:id="@+id/signup_with_google"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/signup_with_google_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/search" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign up with google"
+                        android:textColor="@color/primary_light" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/primary_light"
+                    android:text="or signup using email" />
 
                 <EditText
                     android:id="@+id/editTextTextPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginBottom="15dp"
                     android:background="@drawable/custom_input"
                     android:drawableStart="@drawable/ic_outline_email_24"
@@ -81,33 +124,7 @@
                     android:id="@+id/button3"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_marginBottom="10dp"
                     android:text="Continue" />
-
-                <LinearLayout
-                    android:id="@+id/login_with_google"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/signup_with_google_button"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="10dp"
-                        android:src="@drawable/search" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Login with google"
-                        android:textColor="@color/primary_light" />
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -120,17 +137,17 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="30dp"
                         android:textColor="@color/primary_light"
-                        android:text="Don't have an account?"
+                        android:text="Already have an account?"
                         android:layout_marginEnd="5dp"/>
                     <TextView
-                        android:id="@+id/signup_text"
+                        android:id="@+id/login_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="30dp"
                         android:clickable="true"
                         android:focusable="true"
                         android:textColor="@color/primary"
-                        android:text="Signup" />
+                        android:text="Login" />
                 </LinearLayout>
 
             </LinearLayout>

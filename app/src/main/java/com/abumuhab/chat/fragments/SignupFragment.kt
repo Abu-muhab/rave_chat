@@ -130,7 +130,6 @@ class SignupFragment : Fragment() {
         AuthApi.retrofitService.signup(jsonAdapter.toJson(payload)).enqueue(
             object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
-                    Log.i("AUTH", response.code().toString())
                     if (response.code() == 200) {
                         val jsonAdapter: JsonAdapter<AuthSuccessResponse> =
                             moshi.adapter(AuthSuccessResponse::class.java)
@@ -148,7 +147,6 @@ class SignupFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
-                    Log.e("AUTH", t.message.toString())
                     viewModel.setShowSpinner(false)
                 }
 

@@ -1,4 +1,4 @@
-package com.abumuhab.chat
+package com.abumuhab.chat.fragments
 
 import android.app.Activity
 import android.content.IntentSender
@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import com.abumuhab.chat.R
 import com.abumuhab.chat.databinding.FragmentLoginBinding
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -30,7 +31,8 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentLoginBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_login, container, false)
+        val binding: FragmentLoginBinding = DataBindingUtil.inflate(inflater,
+            R.layout.fragment_login, container, false)
         (activity as AppCompatActivity).supportActionBar?.hide()
 
 

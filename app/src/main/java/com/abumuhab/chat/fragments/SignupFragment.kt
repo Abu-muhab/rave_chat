@@ -52,7 +52,7 @@ class SignupFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding: FragmentSignupBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_signup, container, false)
         (activity as AppCompatActivity).supportActionBar?.hide()
@@ -76,7 +76,6 @@ class SignupFragment : Fragment() {
 
         binding.signupButton.setOnClickListener {
             if (validateFields(binding)) {
-                Log.i("HHH", "Form is valid")
                 viewModel.setShowSpinner(true)
                 lifecycleScope.launch {
                     signup(

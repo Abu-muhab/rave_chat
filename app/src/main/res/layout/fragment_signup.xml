@@ -152,7 +152,7 @@
                         android:visibility="@{viewModel.showSignupSpinner? View.GONE: View.VISIBLE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Continue"
+                        android:text="Create Account"
                         android:textColor="@color/white" />
 
                     <ImageView

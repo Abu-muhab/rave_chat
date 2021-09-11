@@ -2,7 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="viewModel"
+            type="com.abumuhab.chat.viewmodels.LoginViewModel" />
+    </data>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -50,39 +55,70 @@
                     android:text="Login"
                     android:textSize="30sp"/>
 
-                <EditText
-                    android:id="@+id/editTextTextPersonName"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_outline_email_24"
+                    android:layout_marginTop="30dp"
                     android:layout_marginBottom="15dp"
-                    android:background="@drawable/custom_input"
-                    android:drawableStart="@drawable/ic_outline_email_24"
-                    android:drawablePadding="10dp"
-                    android:hint="Email"
-                    android:inputType="textPersonName"
-                    android:padding="10dp"
-                    android:textSize="16sp" />
+                    android:id="@+id/emailFieldLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/emailField"
+                        android:hint="Email"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <EditText
-                    android:id="@+id/editTextTextPersonNames"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginBottom="30dp"
-                    android:background="@drawable/custom_input"
-                    android:drawableStart="@drawable/ic_outline_lock_24"
-                    android:drawablePadding="10dp"
-                    android:hint="Password"
-                    android:inputType="textPassword"
-                    android:padding="10dp"
-                    android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_outline_lock_24"
+                    app:endIconMode="password_toggle"
+                    android:id="@+id/passwordFieldLayout"
+                    android:layout_marginBottom="15dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/passwordField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:hint="Password"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
-                    android:id="@+id/button3"
+                <LinearLayout
+                    android:id="@+id/loginButton"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="Continue" />
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/custom_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <ProgressBar
+                        android:layout_width="24dp"
+                        android:indeterminateTint="@color/white"
+                        android:visibility="@{viewModel.showSignupSpinner? View.VISIBLE: View.GONE}"
+                        android:layout_height="24dp"/>
+
+                    <TextView
+                        android:visibility="@{viewModel.showSignupSpinner? View.GONE: View.VISIBLE}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Login"
+                        android:textColor="@color/white" />
+
+                    <ImageView
+                        android:visibility="@{viewModel.showSignupSpinner? View.GONE: View.VISIBLE}"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="10dp"
+                        app:tint="@color/white"
+                        android:src="@drawable/ic_baseline_arrow_forward_24" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/login_with_google"

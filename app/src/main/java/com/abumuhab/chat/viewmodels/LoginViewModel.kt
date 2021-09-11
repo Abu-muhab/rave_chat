@@ -10,7 +10,7 @@ import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.models.UserData
 import kotlinx.coroutines.launch
 
-class SignupViewModel(
+class LoginViewModel(
     private val userDataDao: UserDataDao,
     application: Application
 ): ViewModel() {

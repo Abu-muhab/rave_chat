@@ -1,6 +1,9 @@
 package com.abumuhab.chat.fragments
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.Application
+import android.content.DialogInterface
 import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
@@ -18,10 +21,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.abumuhab.chat.R
+import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.FragmentSignupBinding
 import com.abumuhab.chat.network.*
+import com.abumuhab.chat.util.removeEditTextError
+import com.abumuhab.chat.util.showBasicMessageDialog
+import com.abumuhab.chat.util.showEditTextError
+import com.abumuhab.chat.util.validateEmailField
 import com.abumuhab.chat.viewmodels.SignupViewModel
+import com.abumuhab.chat.viewmodels.SignupViewModelFactory
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -37,29 +47,7 @@ import java.lang.Exception
 
 
 class SignupFragment : Fragment() {
-    private lateinit var oneTapClient: SignInClient
-    private lateinit var signInRequest: BeginSignInRequest
-    private lateinit var signUpRequest: BeginSignInRequest
-
-    private lateinit var startForResult: ActivityResultLauncher<IntentSenderRequest>
-
-
-    private val viewModel: SignupViewModel by lazy{
-        ViewModelProvider(this).get(SignupViewModel::class.java)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        startForResult =
-            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-                if (it.resultCode == Activity.RESULT_OK) {
-                    val credential = oneTapClient.getSignInCredentialFromIntent(it.data)
-                    val idToken = credential.googleIdToken
-                    val username = credential.id
-                    val password = credential.password
-                }
-            }
-    }
+    private lateinit var viewModel: SignupViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +56,11 @@ class SignupFragment : Fragment() {
         val binding: FragmentSignupBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_signup, container, false)
         (activity as AppCompatActivity).supportActionBar?.hide()
+
+        val application: Application = requireNotNull(this.activity).application
+        val userDao = UserDatabase.getInstance(application).userDataDao
+        val viewModelFactory = SignupViewModelFactory(userDao, application)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(SignupViewModel::class.java)
 
         binding.signupContainer.setOnClickListener {
             val imm =
@@ -81,149 +74,85 @@ class SignupFragment : Fragment() {
                 .navigate(SignupFragmentDirections.actionSignupFragmentToLoginFragment())
         }
 
-        binding.signupWithGoogle.setOnClickListener {
-            oneTapAuth()
-        }
-
         binding.signupButton.setOnClickListener {
-            if(validateFields(binding)){
-                Log.i("HHH","Form is valid")
+            if (validateFields(binding)) {
+                Log.i("HHH", "Form is valid")
                 viewModel.setShowSpinner(true)
                 lifecycleScope.launch {
-                    signup(binding.emailField.text.toString().trim(),binding.passwordField.text.toString())
+                    signup(
+                        binding.emailField.text.toString().trim(),
+                        binding.passwordField.text.toString()
+                    )
                 }
+            }
+        }
+
+        viewModel.loggedIn.observe(viewLifecycleOwner) {
+            if (it == true) {
+                binding.signupContainer.findNavController()
+                    .navigate(SignupFragmentDirections.actionSignupFragmentToFriendsFragment())
             }
         }
 
         binding.viewModel = viewModel
 
-        oneTapClient = Identity.getSignInClient((activity as AppCompatActivity))
-        signInRequest = BeginSignInRequest.builder()
-            .setPasswordRequestOptions(
-                BeginSignInRequest.PasswordRequestOptions.builder()
-                    .setSupported(true).build()
-            )
-            .setGoogleIdTokenRequestOptions(
-                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                    .setSupported(true)
-                    .setFilterByAuthorizedAccounts(true)
-                    .setServerClientId("447045430784-5cknb7uqibjcnsrn39776plhkvugl6lt.apps.googleusercontent.com")
-                    .build()
-            )
-            .setAutoSelectEnabled(true)
-            .build()
-
-        signUpRequest = BeginSignInRequest.builder()
-            .setGoogleIdTokenRequestOptions(
-                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                    .setSupported(true)
-                    .setServerClientId("447045430784-5cknb7uqibjcnsrn39776plhkvugl6lt.apps.googleusercontent.com")
-                    .setFilterByAuthorizedAccounts(false)
-                    .build()
-            )
-            .build()
-
-
-        binding.lifecycleOwner=this
+        binding.lifecycleOwner = this
         return binding.root
     }
 
 
-    private fun validateFields(binding: FragmentSignupBinding): Boolean{
-        var  formIsValid = true
+    private fun validateFields(binding: FragmentSignupBinding): Boolean {
+        var formIsValid = true
 
         val emailFieldError: String? = validateEmailField(binding.emailField.text.toString().trim())
 
-        if(emailFieldError!=null){
-            showError(binding.emailFieldLayout,emailFieldError)
-            formIsValid=false
-        }else{
-            removeError(binding.emailFieldLayout)
+        if (emailFieldError != null) {
+            showEditTextError(binding.emailFieldLayout, emailFieldError)
+            formIsValid = false
+        } else {
+            removeEditTextError(binding.emailFieldLayout)
         }
 
-        if(binding.passwordField.text!!.length<6){
-            showError(binding.passwordFieldLayout,"Password too short")
-            formIsValid=false
-        }else{
-            removeError(binding.passwordFieldLayout)
+        if (binding.passwordField.text!!.length < 6) {
+            showEditTextError(binding.passwordFieldLayout, "Password too short")
+            formIsValid = false
+        } else {
+            removeEditTextError(binding.passwordFieldLayout)
         }
 
-        return  formIsValid
+        return formIsValid
     }
 
-    private fun showError(input: TextInputLayout,message: String){
-        input.isErrorEnabled=true
-        input.error=message
-    }
-
-    private fun removeError(input: TextInputLayout){
-        input.isErrorEnabled=false
-        input.error=null;
-    }
-
-
-    private fun validateEmailField(value: String): String?{
-        if(value.isEmpty()){
-            return  "Email Cannot be empty"
-        }else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(value).matches()){
-            return  "Not a valid email address"
-        }
-        return null
-    }
-
-    private fun signup(email:String,password: String){
-        val payload= AuthPayload(email,password)
+    private fun signup(email: String, password: String) {
+        val payload = AuthPayload(email, password)
         val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        AuthApi.retrofitService.signup(payload).enqueue(
-            object: Callback<String> {
+        val jsonAdapter: JsonAdapter<AuthPayload> = moshi.adapter(AuthPayload::class.java)
+        AuthApi.retrofitService.signup(jsonAdapter.toJson(payload)).enqueue(
+            object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
-                    Log.i("AUTH",response.code().toString())
-                    if(response.code()==200){
-                        val jsonAdapter: JsonAdapter<AuthSuccessResponse> = moshi.adapter(AuthSuccessResponse::class.java)
-                        val authResponse: AuthSuccessResponse = jsonAdapter.fromJson(response.body().toString())!!
-                    }else{
-                        val jsonAdapter: JsonAdapter<AuthErrorResponse> = moshi.adapter(AuthErrorResponse::class.java)
-                        val authResponse: AuthErrorResponse = jsonAdapter.fromJson(response.errorBody()?.string().toString())!!
+                    Log.i("AUTH", response.code().toString())
+                    if (response.code() == 200) {
+                        val jsonAdapter: JsonAdapter<AuthSuccessResponse> =
+                            moshi.adapter(AuthSuccessResponse::class.java)
+                        val authResponse: AuthSuccessResponse =
+                            jsonAdapter.fromJson(response.body().toString())!!
+                        viewModel.logIn(authResponse.data)
+                    } else {
+                        val jsonAdapter: JsonAdapter<AuthErrorResponse> =
+                            moshi.adapter(AuthErrorResponse::class.java)
+                        val authResponse: AuthErrorResponse =
+                            jsonAdapter.fromJson(response.errorBody()?.string().toString())!!
+                        showBasicMessageDialog(authResponse.message,activity!!)
                     }
                     viewModel.setShowSpinner(false)
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.e("AUTH", t.message.toString())
                     viewModel.setShowSpinner(false)
                 }
 
             }
         )
     }
-
-
-    //TODO: refractor
-    private fun oneTapAuth() {
-        oneTapClient.beginSignIn(signInRequest).addOnSuccessListener {
-            try {
-                Log.i("LOGIN", "here")
-                startIntentSenderForResult(it.pendingIntent.intentSender, 1, null, 0, 0, 0, null)
-            } catch (e: IntentSender.SendIntentException) {
-                Log.i("LOGIN", "Could not start oneTap UI")
-            }
-        }.addOnFailureListener { e1 ->
-            Log.i("LOGIN", e1.localizedMessage)
-            oneTapClient.beginSignIn(signUpRequest)
-                .addOnSuccessListener {
-                    try {
-                        startForResult.launch(
-                            IntentSenderRequest.Builder(it.pendingIntent.intentSender).build()
-                        )
-                    } catch (e: IntentSender.SendIntentException) {
-                        Log.e("LOGIN", "Couldn't start One Tap UI: ${e.localizedMessage}")
-                    }
-                }
-                .addOnFailureListener { e2 ->
-                    // No Google Accounts found. Just continue presenting the signed-out UI.
-                    Log.d("LOGIN", e2.localizedMessage)
-                }
-        }
-    }
-
-
 }

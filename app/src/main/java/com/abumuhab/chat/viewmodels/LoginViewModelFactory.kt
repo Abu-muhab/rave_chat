@@ -8,11 +8,11 @@ import com.abumuhab.chat.database.UserDataDao
 class LoginViewModelFactory(
     private val userDao: UserDataDao,
     private val application: Application
-):ViewModelProvider.Factory {
+) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(LoginViewModel::class.java)){
-            return LoginViewModel(userDao,application) as T
+        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+            return LoginViewModel(userDao, application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

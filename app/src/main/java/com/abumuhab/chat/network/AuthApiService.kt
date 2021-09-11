@@ -28,8 +28,8 @@ interface AuthApiService {
 }
 
 
-object AuthApi{
-    val retrofitService:  AuthApiService by lazy {
+object AuthApi {
+    val retrofitService: AuthApiService by lazy {
         retrofit.create(AuthApiService::class.java)
     }
 }
@@ -45,4 +45,4 @@ class AuthErrorResponse(
     val message: String
 )
 
-class AuthPayload(val email:String, val password: String)
+class AuthPayload(val email: String, val password: String)

@@ -142,7 +142,7 @@ class SignupFragment : Fragment() {
                             moshi.adapter(AuthErrorResponse::class.java)
                         val authResponse: AuthErrorResponse =
                             jsonAdapter.fromJson(response.errorBody()?.string().toString())!!
-                        showBasicMessageDialog(authResponse.message,activity!!)
+                        showBasicMessageDialog(authResponse.message, activity!!)
                     }
                     viewModel.setShowSpinner(false)
                 }

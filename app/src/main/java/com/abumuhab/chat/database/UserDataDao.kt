@@ -15,5 +15,5 @@ interface UserDataDao {
     suspend fun insert(UserData: UserData)
 
     @Query("SELECT * FROM user_data_table ORDER BY dbId DESC LIMIT 1")
-    suspend fun getLoggedInUser():UserData?
+    suspend fun getLoggedInUser(): UserData?
 }

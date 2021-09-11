@@ -8,11 +8,11 @@ import com.abumuhab.chat.database.UserDataDao
 class SignupViewModelFactory(
     private val userDao: UserDataDao,
     private val application: Application
-):ViewModelProvider.Factory {
+) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(SignupViewModel::class.java)){
-            return SignupViewModel(userDao,application) as T
+        if (modelClass.isAssignableFrom(SignupViewModel::class.java)) {
+            return SignupViewModel(userDao, application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

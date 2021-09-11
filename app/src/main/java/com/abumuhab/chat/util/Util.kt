@@ -26,7 +26,7 @@ fun validateEmailField(value: String): String? {
 }
 
 
-fun showBasicMessageDialog(message: String,activity: Activity) {
+fun showBasicMessageDialog(message: String, activity: Activity) {
     val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
     builder.setMessage(message)
     builder.apply {

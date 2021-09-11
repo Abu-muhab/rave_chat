@@ -9,7 +9,7 @@ import kotlin.math.cos
 import  kotlin.math.min
 import kotlin.math.sin
 
-private enum class FanSpeed(val label: Int){
+private enum class FanSpeed(val label: Int) {
     OFF(R.string.fan_off),
     LOW(R.string.fan_low),
     MEDIUM(R.string.fan_medium),
@@ -30,23 +30,24 @@ private const val RADIUS_OFFSET_INDICATOR = -35
 
 class DialView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet?=null,
-    defStyleAttr: Int=0
-): View(context,attrs,defStyleAttr){
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr) {
     private var fanSpeedLowColor = 0
     private var fanSpeedMediumColor = 0
     private var fanSpeedMaxColor = 0
 
     private var radius = 0.0f                   // Radius of the circle.
     private var fanSpeed = FanSpeed.OFF         // The active selection.
+
     // position variable which will be used to draw label and indicator circle position
     private val pointPosition: PointF = PointF(0.0f, 0.0f)
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style= Paint.Style.FILL
-        textAlign=Paint.Align.CENTER
-        textSize=55.0f
-        typeface = Typeface.create("",Typeface.BOLD)
+        style = Paint.Style.FILL
+        textAlign = Paint.Align.CENTER
+        textSize = 55.0f
+        typeface = Typeface.create("", Typeface.BOLD)
     }
 
     init {
@@ -61,7 +62,7 @@ class DialView @JvmOverloads constructor(
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        radius = (min(width,height)/2.0*0.8).toFloat()
+        radius = (min(width, height) / 2.0 * 0.8).toFloat()
     }
 
     private fun PointF.computeXYForSpeed(pos: FanSpeed, radius: Float) {
@@ -86,7 +87,7 @@ class DialView @JvmOverloads constructor(
         val markerRadius = radius + RADIUS_OFFSET_INDICATOR
         pointPosition.computeXYForSpeed(fanSpeed, markerRadius)
         paint.color = Color.BLACK
-        canvas.drawCircle(pointPosition.x, pointPosition.y, radius/12, paint)
+        canvas.drawCircle(pointPosition.x, pointPosition.y, radius / 12, paint)
 
 
         // Draw the text labels.
@@ -108,7 +109,6 @@ class DialView @JvmOverloads constructor(
         invalidate()
         return true
     }
-
 
 
 }

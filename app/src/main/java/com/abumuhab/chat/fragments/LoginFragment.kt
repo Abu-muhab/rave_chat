@@ -41,8 +41,10 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentLoginBinding = DataBindingUtil.inflate(inflater,
-            R.layout.fragment_login, container, false)
+        val binding: FragmentLoginBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_login, container, false
+        )
         (activity as AppCompatActivity).supportActionBar?.hide()
 
         val application: Application = requireNotNull(this.activity).application
@@ -52,13 +54,15 @@ class LoginFragment : Fragment() {
 
 
         binding.loginContainer.setOnClickListener {
-            val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(it.windowToken,0)
+            val imm =
+                requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(it.windowToken, 0)
             it.clearFocus()
         }
 
         binding.signupText.setOnClickListener {
-            it.findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToSignupFragment())
+            it.findNavController()
+                .navigate(LoginFragmentDirections.actionLoginFragmentToSignupFragment())
         }
 
         binding.loginButton.setOnClickListener {
@@ -84,7 +88,7 @@ class LoginFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
-        return  binding.root
+        return binding.root
     }
 
     private fun validateFields(binding: FragmentLoginBinding): Boolean {
@@ -127,7 +131,7 @@ class LoginFragment : Fragment() {
                             moshi.adapter(AuthErrorResponse::class.java)
                         val authResponse: AuthErrorResponse =
                             jsonAdapter.fromJson(response.errorBody()?.string().toString())!!
-                        showBasicMessageDialog(authResponse.message,activity!!)
+                        showBasicMessageDialog(authResponse.message, activity!!)
                     }
                     viewModel.setShowSpinner(false)
                 }

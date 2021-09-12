@@ -6,6 +6,9 @@
         <variable
             name="resourceId"
             type="int" />
+        <variable
+            name="large"
+            type="Boolean" />
     </data>
     <LinearLayout
         android:orientation="vertical"
@@ -17,7 +20,11 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
+            app:layoutWidth="@{large? @dimen/large_avatar: @dimen/small_avatar}"
+            app:layoutHeight="@{large? @dimen/large_avatar: @dimen/small_avatar}"
             app:imageResource="@{resourceId}"
-            tools:src="@drawable/avatar_1"/>
+            tools:src="@drawable/avatar_1"
+            tools:layout_width="70dp"
+            tools:layout_height="70dp"/>
     </LinearLayout>
 </layout>

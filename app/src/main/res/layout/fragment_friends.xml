@@ -14,35 +14,57 @@
         android:background="@color/primary_light"
         android:orientation="vertical">
 
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:id="@+id/friendsPreviewLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="150dp"
-                android:gravity="bottom"
-                android:orientation="horizontal"
-                android:padding="20dp">
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/oval_border"
-                    android:backgroundTint="@color/accent"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_baseline_search_24"
-                    app:tint="@color/primary" />
-            </LinearLayout>
-        </HorizontalScrollView>
-
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Friends"
+                android:textColor="@color/white"
+                android:textSize="35sp"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/friendsPreviewLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/oval_border"
+                        android:backgroundTint="@color/accent"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_outline_person_add_24"
+                        app:tint="@color/primary" />
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/friendList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/rounded_top_container"
             android:backgroundTint="@color/white"
-            android:orientation="vertical"></LinearLayout>
+            android:paddingLeft="20dp"
+            android:paddingTop="40dp"
+            android:overScrollMode="never"
+            android:paddingRight="20dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </LinearLayout>
 </layout>

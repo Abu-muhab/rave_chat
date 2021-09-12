@@ -10,10 +10,13 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/previewContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="25dp">
+        android:layout_marginBottom="25dp"
+        android:clickable="true"
+        android:focusable="true">
 
         <include
             android:id="@+id/avatar"

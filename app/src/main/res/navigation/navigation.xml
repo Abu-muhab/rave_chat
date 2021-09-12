@@ -40,5 +40,17 @@
         android:id="@+id/friendsFragment"
         android:name="com.abumuhab.chat.fragments.FriendsFragment"
         android:label="fragment_friends"
-        tools:layout="@layout/fragment_friends" />
+        tools:layout="@layout/fragment_friends" >
+        <action
+            android:id="@+id/action_friendsFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.abumuhab.chat.fragments.ChatFragment"
+        tools:layout="@layout/fragment_chat"
+        android:label="ChatFragment" >
+        <argument android:name="chatPreview"
+            app:argType="string" />
+    </fragment>
 </navigation>

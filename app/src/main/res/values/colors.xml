@@ -11,4 +11,7 @@
     <color name="accent">#e7b9ff</color>
     <color name="primary_light">#FF6200EE</color>
     <color name="darkGrey">#A9A9A9</color>
+    <color name="light_purple">#d3cced</color>
+    <color name="incoming_light_purple">#d4d2d9</color>
+    <color name="kinda_white">#f6f5fa</color>
 </resources>

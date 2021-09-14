@@ -67,7 +67,7 @@
                     android:text="Create an account to start chatting with your friends and family" />
 
                 <LinearLayout
-                    android:id="@+id/signup_with_google"
+                    android:id="@+id/signup_with_snapchat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"

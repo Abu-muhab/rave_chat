@@ -1,41 +1,37 @@
 package com.abumuhab.chat.fragments
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Application
-import android.content.DialogInterface
-import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.abumuhab.chat.R
 import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.FragmentSignupBinding
-import com.abumuhab.chat.network.*
+import com.abumuhab.chat.network.AuthApi
+import com.abumuhab.chat.network.AuthErrorResponse
+import com.abumuhab.chat.network.AuthPayload
+import com.abumuhab.chat.network.AuthSuccessResponse
 import com.abumuhab.chat.util.removeEditTextError
 import com.abumuhab.chat.util.showBasicMessageDialog
 import com.abumuhab.chat.util.showEditTextError
 import com.abumuhab.chat.util.validateEmailField
 import com.abumuhab.chat.viewmodels.SignupViewModel
 import com.abumuhab.chat.viewmodels.SignupViewModelFactory
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.material.textfield.TextInputLayout
+import com.snapchat.kit.sdk.SnapKit
+import com.snapchat.kit.sdk.SnapLogin
+import com.snapchat.kit.sdk.core.controller.LoginStateController.OnLoginStateChangedListener
+import com.snapchat.kit.sdk.login.models.UserDataResponse
+import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -43,11 +39,48 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Exception
 
 
 class SignupFragment : Fragment() {
     private lateinit var viewModel: SignupViewModel
+    private lateinit var mLoginStateChangedListener: OnLoginStateChangedListener
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mLoginStateChangedListener = object : OnLoginStateChangedListener {
+            override fun onLoginSucceeded() {
+                val query = "{me{bitmoji{avatar},displayName,externalId,bitmoji{selfie}}}"
+                val variables = mapOf<String, Any>()
+
+                lifecycleScope.launch {
+                    SnapLogin.fetchUserData(
+                        requireContext(),
+                        query,
+                        variables,
+                        object : FetchUserDataCallback {
+                            override fun onSuccess(userDataResponse: UserDataResponse?) {
+                                if (userDataResponse == null || userDataResponse.data == null) {
+                                    return
+                                }
+                                val meData = userDataResponse.data.me ?: return
+                                val avatarUrl = meData.bitmojiData.selfie
+                                val name = meData.displayName
+                                val snapId = meData.externalId
+                            }
+
+                            override fun onFailure(isNetworkError: Boolean, statusCode: Int) {}
+                        })
+                }
+            }
+
+            override fun onLoginFailed() {}
+
+            override fun onLogout() {}
+        }
+
+        SnapLogin.getLoginStateController(requireContext())
+            .addOnLoginStateChangedListener(mLoginStateChangedListener)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,6 +117,10 @@ class SignupFragment : Fragment() {
                     )
                 }
             }
+        }
+
+        binding.signupWithSnapchat.setOnClickListener {
+            SnapLogin.getAuthTokenManager(requireContext()).startTokenGrant()
         }
 
         viewModel.loggedIn.observe(viewLifecycleOwner) {

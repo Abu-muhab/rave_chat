@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.abumuhab.chat">
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <queries>
+        <package android:name="com.snapchat.android" />
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,12 +14,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Chat">
+
+        <meta-data android:name="com.snapchat.kit.sdk.clientId" android:value="a398adcc-b79a-42d4-98e5-e8cc16a62d4c" />
+        <meta-data android:name="com.snapchat.kit.sdk.redirectUrl" android:value="https://rave-chat-api.herokuapp.com/auth/users/snapchat" />
+        <meta-data android:name="com.snapchat.kit.sdk.scopes" android:resource="@array/snap_connect_scopes" />
+
         <activity android:name=".activities.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.snapchat.kit.sdk.SnapKitActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="rave-chat-api.herokuapp.com"
+                    android:path="/auth/users/snapchat" />
             </intent-filter>
         </activity>
     </application>

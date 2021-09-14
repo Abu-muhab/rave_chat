@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="@color/primary">
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="@color/dark_yellow">
     <item android:id="@+id/mask">
         <shape android:shape="rectangle">
-            <stroke android:color="@color/primary" android:width="5px"/>
-            <corners android:radius="5dp" />
-            <solid android:color="@color/white"/>
+            <stroke android:color="@color/yellow" android:width="5px"/>
+            <corners android:radius="20dp" />
+            <solid android:color="@color/yellow"/>
         </shape>
     </item>
 
     <item android:id="@+id/background">
         <shape android:shape="rectangle">
-            <stroke android:color="@color/primary" android:width="5px"/>
-            <corners android:radius="5dp" />
+            <stroke android:color="@color/dark_yellow"/>
+            <corners android:radius="20dp" />
         </shape>
     </item>
 </ripple>

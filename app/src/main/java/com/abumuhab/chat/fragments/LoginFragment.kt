@@ -26,6 +26,10 @@ import com.abumuhab.chat.util.showEditTextError
 import com.abumuhab.chat.util.validateEmailField
 import com.abumuhab.chat.viewmodels.LoginViewModel
 import com.abumuhab.chat.viewmodels.LoginViewModelFactory
+import com.snapchat.kit.sdk.SnapLogin
+import com.snapchat.kit.sdk.core.controller.LoginStateController
+import com.snapchat.kit.sdk.login.models.UserDataResponse
+import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -36,6 +40,41 @@ import retrofit2.Response
 
 class LoginFragment : Fragment() {
     private lateinit var viewModel: LoginViewModel
+    private lateinit var mLoginStateChangedListener: LoginStateController.OnLoginStateChangedListener
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mLoginStateChangedListener = object : LoginStateController.OnLoginStateChangedListener {
+            override fun onLoginSucceeded() {
+                val query = "{me{bitmoji{avatar},displayName,externalId,bitmoji{selfie}}}"
+                val variables = mapOf<String, Any>()
+
+                lifecycleScope.launch {
+                    SnapLogin.fetchUserData(
+                        requireContext(),
+                        query,
+                        variables,
+                        object : FetchUserDataCallback {
+                            override fun onSuccess(userDataResponse: UserDataResponse?) {
+                                if (userDataResponse == null || userDataResponse.data == null) {
+                                    return
+                                }
+                                val meData = userDataResponse.data.me ?: return
+                                val avatarUrl = meData.bitmojiData.selfie
+                                val name = meData.displayName
+                                val snapId = meData.externalId
+                            }
+
+                            override fun onFailure(isNetworkError: Boolean, statusCode: Int) {}
+                        })
+                }
+            }
+
+            override fun onLoginFailed() {}
+
+            override fun onLogout() {}
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,6 +114,10 @@ class LoginFragment : Fragment() {
                     )
                 }
             }
+        }
+
+        binding.loginWithSnapchat.setOnClickListener {
+            SnapLogin.getAuthTokenManager(requireContext()).startTokenGrant()
         }
 
         viewModel.loggedIn.observe(viewLifecycleOwner) {

@@ -14,4 +14,6 @@
     <color name="light_purple">#d3cced</color>
     <color name="incoming_light_purple">#d4d2d9</color>
     <color name="kinda_white">#f6f5fa</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="dark_yellow">#8B8000</color>
 </resources>

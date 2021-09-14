@@ -121,7 +121,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/login_with_google"
+                    android:id="@+id/login_with_snapchat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
@@ -133,16 +133,19 @@
                     android:padding="10dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        app:tint="@color/white"
                         android:layout_marginEnd="10dp"
-                        android:src="@drawable/search" />
+                        android:src="@drawable/snapchat" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Login with google"
-                        android:textColor="@color/primary_light" />
+                        android:text="Login with snapchat"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/black" />
                 </LinearLayout>
 
                 <LinearLayout

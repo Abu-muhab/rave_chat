@@ -79,16 +79,19 @@
                     android:padding="10dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
                         android:layout_marginEnd="10dp"
-                        android:src="@drawable/search" />
+                        app:tint="@color/white"
+                        android:src="@drawable/snapchat" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sign up with google"
-                        android:textColor="@color/primary_light" />
+                        android:text="Sign up with snapchat"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/black" />
                 </LinearLayout>
 
                 <TextView

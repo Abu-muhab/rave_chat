@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/messageList"
+            app:layout_constraintBottom_toTopOf="@+id/messageListContainer"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread_inside">
 
@@ -103,7 +103,7 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/messageList"
+            android:id="@+id/messageListContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/rounded_top_container"
@@ -111,33 +111,29 @@
             android:orientation="vertical"
             android:overScrollMode="never"
             android:paddingLeft="20dp"
-            android:paddingTop="40dp"
+            android:paddingTop="15dp"
             android:paddingRight="20dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
-            <LinearLayout
-                android:id="@+id/linearLayout4"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/messageList"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="vertical"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="20dp">
-
-                <include layout="@layout/message_card" />
-
-                <include layout="@layout/message_card" />
-
-                <include layout="@layout/message_card_receiver" />
-            </LinearLayout>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/linearLayout2"
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -151,7 +147,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+                app:layout_constraintTop_toBottomOf="@+id/messageList">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayout"

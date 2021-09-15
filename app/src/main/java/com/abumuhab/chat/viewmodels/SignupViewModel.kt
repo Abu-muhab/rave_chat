@@ -19,18 +19,27 @@ class SignupViewModel(
     val showSignupSpinner: LiveData<Boolean>
         get() = _showSignupSpinner
 
+    private val _showSnapSignupSpinner = MutableLiveData<Boolean>()
+    val showSnapSignupSpinner: LiveData<Boolean>
+        get() = _showSnapSignupSpinner
+
     private val _loggedIn = MutableLiveData<Boolean>()
     val loggedIn: LiveData<Boolean>
         get() = _loggedIn
 
     init {
         _showSignupSpinner.value = false
+        _showSnapSignupSpinner.value=false
         _loggedIn.value = false
         updateLoginStatus()
     }
 
     fun setShowSpinner(value: Boolean) {
         _showSignupSpinner.value = value
+    }
+
+    fun setShowSnapchatSpinner(value: Boolean) {
+        _showSnapSignupSpinner.value = value
     }
 
     fun logIn(userData: UserData) {
@@ -44,7 +53,6 @@ class SignupViewModel(
         viewModelScope.launch {
             val userData = userDataDao.getLoggedInUser()
             if (userData != null) {
-                Log.i("DAA", userData.user.email)
                 _loggedIn.value = true
             }
         }

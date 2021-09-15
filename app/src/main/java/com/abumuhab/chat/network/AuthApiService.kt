@@ -25,6 +25,10 @@ interface AuthApiService {
     @Headers("Content-Type: application/json")
     @POST("auth/users/login")
     fun login(@Body payload: String): Call<String>
+
+    @Headers("Content-Type: application/json")
+    @POST("auth/users/snapchat")
+    fun snapAuth(@Body payload: String): Call<String>
 }
 
 
@@ -46,3 +50,5 @@ class AuthErrorResponse(
 )
 
 class AuthPayload(val email: String, val password: String)
+
+class SnapAuthPayload(val snapId:String,val avatarUrl: String, val displayName: String)

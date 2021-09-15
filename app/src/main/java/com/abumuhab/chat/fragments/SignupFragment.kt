@@ -17,10 +17,7 @@ import androidx.navigation.findNavController
 import com.abumuhab.chat.R
 import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.FragmentSignupBinding
-import com.abumuhab.chat.network.AuthApi
-import com.abumuhab.chat.network.AuthErrorResponse
-import com.abumuhab.chat.network.AuthPayload
-import com.abumuhab.chat.network.AuthSuccessResponse
+import com.abumuhab.chat.network.*
 import com.abumuhab.chat.util.removeEditTextError
 import com.abumuhab.chat.util.showBasicMessageDialog
 import com.abumuhab.chat.util.showEditTextError
@@ -51,7 +48,7 @@ class SignupFragment : Fragment() {
             override fun onLoginSucceeded() {
                 val query = "{me{bitmoji{avatar},displayName,externalId,bitmoji{selfie}}}"
                 val variables = mapOf<String, Any>()
-
+                viewModel.setShowSnapchatSpinner(true)
                 lifecycleScope.launch {
                     SnapLogin.fetchUserData(
                         requireContext(),
@@ -60,15 +57,20 @@ class SignupFragment : Fragment() {
                         object : FetchUserDataCallback {
                             override fun onSuccess(userDataResponse: UserDataResponse?) {
                                 if (userDataResponse == null || userDataResponse.data == null) {
+                                    viewModel.setShowSnapchatSpinner(false)
                                     return
                                 }
                                 val meData = userDataResponse.data.me ?: return
                                 val avatarUrl = meData.bitmojiData.selfie
                                 val name = meData.displayName
                                 val snapId = meData.externalId
+
+                                snapSignup(snapId, avatarUrl, name)
                             }
 
-                            override fun onFailure(isNetworkError: Boolean, statusCode: Int) {}
+                            override fun onFailure(isNetworkError: Boolean, statusCode: Int) {
+                                viewModel.setShowSnapchatSpinner(false)
+                            }
                         })
                 }
             }
@@ -184,6 +186,37 @@ class SignupFragment : Fragment() {
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
                     viewModel.setShowSpinner(false)
+                }
+
+            }
+        )
+    }
+
+    private fun snapSignup(snapId: String, avatarUrl: String, displayName: String) {
+        val payload = SnapAuthPayload(snapId, avatarUrl, displayName)
+        val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+        val jsonAdapter: JsonAdapter<SnapAuthPayload> = moshi.adapter(SnapAuthPayload::class.java)
+        AuthApi.retrofitService.snapAuth(jsonAdapter.toJson(payload)).enqueue(
+            object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.code() == 200) {
+                        val jsonAdapter: JsonAdapter<AuthSuccessResponse> =
+                            moshi.adapter(AuthSuccessResponse::class.java)
+                        val authResponse: AuthSuccessResponse =
+                            jsonAdapter.fromJson(response.body().toString())!!
+                        viewModel.logIn(authResponse.data)
+                    } else {
+                        val jsonAdapter: JsonAdapter<AuthErrorResponse> =
+                            moshi.adapter(AuthErrorResponse::class.java)
+                        val authResponse: AuthErrorResponse =
+                            jsonAdapter.fromJson(response.errorBody()?.string().toString())!!
+                        showBasicMessageDialog(authResponse.message, activity!!)
+                    }
+                    viewModel.setShowSnapchatSpinner(false)
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    viewModel.setShowSnapchatSpinner(false)
                 }
 
             }

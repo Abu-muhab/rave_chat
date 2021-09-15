@@ -1,7 +1,6 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,22 +14,31 @@ class LoginViewModel(
     application: Application
 ) : ViewModel() {
 
-    private val _showSignupSpinner = MutableLiveData<Boolean>()
-    val showSignupSpinner: LiveData<Boolean>
-        get() = _showSignupSpinner
+    private val _showLoginSpinner = MutableLiveData<Boolean>()
+    val showLoginSpinner: LiveData<Boolean>
+        get() = _showLoginSpinner
+
+    private val _showSnapLoginSpinner = MutableLiveData<Boolean>()
+    val showSnapLoginSpinner: LiveData<Boolean>
+        get() = _showSnapLoginSpinner
 
     private val _loggedIn = MutableLiveData<Boolean>()
     val loggedIn: LiveData<Boolean>
         get() = _loggedIn
 
     init {
-        _showSignupSpinner.value = false
+        _showLoginSpinner.value = false
+        _showSnapLoginSpinner.value = false
         _loggedIn.value = false
         updateLoginStatus()
     }
 
     fun setShowSpinner(value: Boolean) {
-        _showSignupSpinner.value = value
+        _showLoginSpinner.value = value
+    }
+
+    fun setShowSnapchatSpinner(value: Boolean) {
+        _showSnapLoginSpinner.value = value
     }
 
     fun logIn(userData: UserData) {
@@ -44,7 +52,6 @@ class LoginViewModel(
         viewModelScope.launch {
             val userData = userDataDao.getLoggedInUser()
             if (userData != null) {
-                Log.i("DAA", userData.user.email)
                 _loggedIn.value = true
             }
         }

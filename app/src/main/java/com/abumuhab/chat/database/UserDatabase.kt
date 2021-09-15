@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.abumuhab.chat.models.UserData
 
 
-@Database(entities = [UserData::class], version = 1, exportSchema = false)
+@Database(entities = [UserData::class], version = 3, exportSchema = false)
 abstract class UserDatabase : RoomDatabase() {
     abstract val userDataDao: UserDataDao
 

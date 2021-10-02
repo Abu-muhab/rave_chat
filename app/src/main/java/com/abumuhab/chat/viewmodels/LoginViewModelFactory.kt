@@ -11,9 +11,13 @@ class LoginViewModelFactory(
 ) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            return LoginViewModel(userDao, application) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+//        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+//            return modelClass.getConstructor(UserDataDao::class.java, Application::class.java)
+//                .newInstance(userDao, application)
+////            return LoginViewModel(userDao, application) as T
+//        }
+//        throw IllegalArgumentException("Unknown ViewModel class")
+        return modelClass.getConstructor(UserDataDao::class.java, Application::class.java)
+            .newInstance(userDao, application)
     }
 }

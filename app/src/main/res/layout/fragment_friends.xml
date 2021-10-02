@@ -3,27 +3,61 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragments.FriendsFragment">
-    <LinearLayout
+
+    <data>
+
+        <import type="com.abumuhab.chat.R" />
+
+        <variable
+            name="viewModel"
+            type="com.abumuhab.chat.viewmodels.FriendsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/primary_light"
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/friendsHeader"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:gravity="bottom"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:text="Friends"
-                android:textColor="@color/white"
-                android:textSize="35sp"
-                android:textStyle="bold" />
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Friends"
+                    android:textColor="@color/white"
+                    android:textSize="35sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/oval_border"
+                    android:backgroundTint="@color/accent"
+                    android:padding="8dp"
+                    android:src="@drawable/avatar_4"
+                    app:imageUrl="@{viewModel.userData==null?null:viewModel.userData.user.avatarUrl}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <HorizontalScrollView
                 android:layout_width="wrap_content"
@@ -53,13 +87,27 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/friendList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:background="@drawable/rounded_top_container"
             android:backgroundTint="@color/white"
+            android:overScrollMode="never"
             android:paddingLeft="20dp"
             android:paddingTop="40dp"
-            android:overScrollMode="never"
             android:paddingRight="20dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-    </LinearLayout>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/friendsHeader" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:backgroundTint="@color/primary_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_baseline_chat_24"
+            app:tint="@color/accent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

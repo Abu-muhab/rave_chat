@@ -53,5 +53,4 @@ class ChatPreviewDiffCallback : DiffUtil.ItemCallback<ChatPreview>() {
     override fun areContentsTheSame(oldItem: ChatPreview, newItem: ChatPreview): Boolean {
         return oldItem == newItem
     }
-
 }

@@ -8,6 +8,8 @@
 
         <import type="com.abumuhab.chat.R" />
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.abumuhab.chat.viewmodels.FriendsViewModel" />
@@ -84,6 +86,32 @@
             </HorizontalScrollView>
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/noChatList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_top_container"
+            android:backgroundTint="@color/white"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:overScrollMode="never"
+            android:paddingLeft="20dp"
+            android:paddingTop="40dp"
+            android:paddingRight="20dp"
+            android:visibility="@{viewModel.chats.size()>0?View.GONE:View.VISIBLE}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/friendsHeader"
+            tools:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No chats" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/friendList"
             android:layout_width="match_parent"
@@ -94,11 +122,13 @@
             android:paddingLeft="20dp"
             android:paddingTop="40dp"
             android:paddingRight="20dp"
+            android:visibility="@{viewModel.chats.size()==0?View.GONE:View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/friendsHeader" />
+            app:layout_constraintTop_toBottomOf="@id/friendsHeader"
+            tools:visibility="visible" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"

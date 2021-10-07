@@ -11,22 +11,22 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.abumuhab.chat.R
-import com.abumuhab.chat.adapters.FriendAdapter
+import com.abumuhab.chat.adapters.ChatPreviewAdapter
 import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.AvatarBinding
-import com.abumuhab.chat.databinding.FragmentFriendsBinding
+import com.abumuhab.chat.databinding.FragmentChatHistoryBinding
 import com.abumuhab.chat.viewmodels.FriendsViewModel
 import com.abumuhab.chat.viewmodels.LoginViewModelFactory
 
-class FriendsFragment : Fragment() {
+class ChatHistoryFragment : Fragment() {
     private lateinit var viewModel: FriendsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding: FragmentFriendsBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_friends, container, false)
+        val binding: FragmentChatHistoryBinding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_chat_history, container, false)
         (activity as AppCompatActivity).supportActionBar?.hide()
 
         val application: Application = requireNotNull(this.activity).application
@@ -35,7 +35,7 @@ class FriendsFragment : Fragment() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(FriendsViewModel::class.java)
 
 
-        val adapter = FriendAdapter()
+        val adapter = ChatPreviewAdapter()
 
         viewModel.chats.observe(viewLifecycleOwner) {
             if (it != null) {
@@ -52,7 +52,7 @@ class FriendsFragment : Fragment() {
 
         binding.newChatButton.setOnClickListener {
             it.findNavController()
-                .navigate(FriendsFragmentDirections.actionFriendsFragmentToNewChatFragment())
+                .navigate(ChatHistoryFragmentDirections.actionChatHistoryFragmentToNewChatFragment())
         }
 
         binding.friendList.adapter = adapter

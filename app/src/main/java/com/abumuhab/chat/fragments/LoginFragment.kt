@@ -128,7 +128,7 @@ class LoginFragment : Fragment() {
         viewModel.loggedIn.observe(viewLifecycleOwner) {
             if (it == true) {
                 binding.loginContainer.findNavController()
-                    .navigate(LoginFragmentDirections.actionLoginFragmentToFriendsFragment())
+                    .navigate(LoginFragmentDirections.actionLoginFragmentToChatHistoryFragment())
             }
         }
 

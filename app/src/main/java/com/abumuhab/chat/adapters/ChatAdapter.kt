@@ -3,21 +3,13 @@ package com.abumuhab.chat.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.marginEnd
 import androidx.databinding.ViewDataBinding
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.abumuhab.chat.databinding.ChatPreviewBinding
 import com.abumuhab.chat.databinding.MessageCardBinding
 import com.abumuhab.chat.databinding.MessageCardIncomingBinding
-import com.abumuhab.chat.fragments.FriendsFragmentDirections
-import com.abumuhab.chat.models.ChatPreview
 import com.abumuhab.chat.models.Message
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import java.lang.Exception
 
 class ChatAdapter :

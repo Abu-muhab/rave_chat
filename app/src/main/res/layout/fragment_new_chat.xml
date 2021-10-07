@@ -5,7 +5,6 @@
     tools:context=".fragments.NewChatFragment">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.abumuhab.chat.viewmodels.NewChatViewModel" />

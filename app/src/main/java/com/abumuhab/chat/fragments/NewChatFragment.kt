@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.abumuhab.chat.R
+import com.abumuhab.chat.adapters.FriendAdapter
 import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.FragmentNewChatBinding
 import com.abumuhab.chat.viewmodels.LoginViewModelFactory
@@ -34,6 +36,14 @@ class NewChatFragment : Fragment() {
         val viewModelFactory = LoginViewModelFactory(userDao, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(NewChatViewModel::class.java)
 
+
+        val adapter = FriendAdapter()
+        viewModel.friends.observe(viewLifecycleOwner) {
+            if (it != null) {
+                adapter.submitList(it)
+            }
+        }
+        binding.friendList.adapter = adapter
 
         binding.viewModel = viewModel
         return binding.root

@@ -16,7 +16,7 @@
             app:popUpTo="@id/signupFragment" />
         <action
             android:id="@+id/action_signupFragment_to_friendsFragment"
-            app:destination="@id/friendsFragment"
+            app:destination="@id/chatHistoryFragment"
             app:popUpTo="@id/signupFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -31,21 +31,21 @@
             app:popUpTo="@id/signupFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_loginFragment_to_friendsFragment"
-            app:destination="@id/friendsFragment"
+            android:id="@+id/action_loginFragment_to_chatHistoryFragment"
+            app:destination="@id/chatHistoryFragment"
             app:popUpTo="@id/signupFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/friendsFragment"
-        android:name="com.abumuhab.chat.fragments.FriendsFragment"
+        android:id="@+id/chatHistoryFragment"
+        android:name="com.abumuhab.chat.fragments.ChatHistoryFragment"
         android:label="fragment_friends"
-        tools:layout="@layout/fragment_friends" >
+        tools:layout="@layout/fragment_chat_history" >
         <action
-            android:id="@+id/action_friendsFragment_to_chatFragment"
+            android:id="@+id/action_chatHistoryFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
         <action
-            android:id="@+id/action_friendsFragment_to_newChatFragment"
+            android:id="@+id/action_chatHistoryFragment_to_newChatFragment"
             app:destination="@id/newChatFragment" />
     </fragment>
     <fragment

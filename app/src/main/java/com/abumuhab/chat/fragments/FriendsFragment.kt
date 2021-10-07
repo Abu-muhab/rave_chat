@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.abumuhab.chat.R
 import com.abumuhab.chat.adapters.FriendAdapter
 import com.abumuhab.chat.database.UserDatabase
@@ -47,6 +48,11 @@ class FriendsFragment : Fragment() {
                     binding.friendsPreviewLayout.addView(avatarBinding.root)
                 }
             }
+        }
+
+        binding.newChatButton.setOnClickListener {
+            it.findNavController()
+                .navigate(FriendsFragmentDirections.actionFriendsFragmentToNewChatFragment())
         }
 
         binding.friendList.adapter = adapter

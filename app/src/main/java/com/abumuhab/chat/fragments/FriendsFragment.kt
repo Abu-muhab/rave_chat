@@ -33,16 +33,21 @@ class FriendsFragment : Fragment() {
         val viewModelFactory = LoginViewModelFactory(userDao, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(FriendsViewModel::class.java)
 
-        viewModel.chats.forEach {
-            val avatarBinding = AvatarBinding.inflate(inflater, binding.friendsPreviewLayout, false)
-            avatarBinding.resourceId = it.imageResource
-            binding.lifecycleOwner = this
-            binding.friendsPreviewLayout.addView(avatarBinding.root)
-        }
 
         val adapter = FriendAdapter()
 
-        adapter.submitList(viewModel.chats.toList())
+        viewModel.chats.observe(viewLifecycleOwner) {
+            if (it != null) {
+                adapter.submitList(it)
+                it.forEach {
+                    val avatarBinding =
+                        AvatarBinding.inflate(inflater, binding.friendsPreviewLayout, false)
+                    avatarBinding.resourceId = it.imageResource
+                    binding.lifecycleOwner = this
+                    binding.friendsPreviewLayout.addView(avatarBinding.root)
+                }
+            }
+        }
 
         binding.friendList.adapter = adapter
 

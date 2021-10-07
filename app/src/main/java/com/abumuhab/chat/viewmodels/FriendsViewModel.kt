@@ -19,11 +19,11 @@ class FriendsViewModel(
     val userData: LiveData<UserData?>
         get() = _userData
 
-    var chats = ArrayList<ChatPreview>()
+    var chats = MutableLiveData<ArrayList<ChatPreview>>()
 
     init {
         getLoggedInUser()
-        chats = arrayListOf(
+        chats.value = arrayListOf(
             ChatPreview(
                 R.drawable.avatar_1,
                 "Emmy",

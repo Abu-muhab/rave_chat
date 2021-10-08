@@ -2,12 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragments.NewChatFragment">
+    tools:context=".fragments.FindFriendsFragment">
 
     <data>
+
         <variable
             name="viewModel"
-            type="com.abumuhab.chat.viewmodels.NewChatViewModel" />
+            type="com.abumuhab.chat.viewmodels.FindFriendsViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:text="New Chat"
+            android:text="Add Friends"
             android:textColor="@color/white"
             android:textSize="35sp"
             android:textStyle="bold"
@@ -31,11 +32,11 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_margin="10dp"
             android:id="@+id/linearLayout2"
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/chat_box_oval"
             android:backgroundTint="@color/kinda_white"
@@ -55,19 +56,19 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:background="@android:color/transparent"
+                android:hint="Find Friends"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
                 app:boxBackgroundColor="@android:color/transparent"
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="0dp"
+                app:hintAnimationEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/imageView2"
-                app:hintAnimationEnabled="false"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:maxLines="1"
-                android:hint="Search Friends"
-                android:inputType="text"
-                android:imeOptions="actionSearch"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
 
             <ImageView

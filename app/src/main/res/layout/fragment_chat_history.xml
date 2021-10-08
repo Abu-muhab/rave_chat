@@ -75,11 +75,14 @@
                     android:padding="20dp">
 
                     <ImageView
+                        android:id="@+id/addFriendsButton"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:background="@drawable/oval_border"
                         android:backgroundTint="@color/accent"
                         android:padding="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:src="@drawable/ic_outline_person_add_24"
                         app:tint="@color/primary" />
                 </LinearLayout>

@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_chatHistoryFragment_to_newChatFragment"
             app:destination="@id/newChatFragment" />
+        <action
+            android:id="@+id/action_chatHistoryFragment_to_findFriendsFragment"
+            app:destination="@id/findFriendsFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -61,4 +64,9 @@
         android:name="com.abumuhab.chat.fragments.NewChatFragment"
         android:label="fragment_new_chat"
         tools:layout="@layout/fragment_new_chat" />
+    <fragment
+        android:id="@+id/findFriendsFragment"
+        android:name="com.abumuhab.chat.fragments.FindFriendsFragment"
+        android:label="fragment_find_friends"
+        tools:layout="@layout/fragment_find_friends" />
 </navigation>

@@ -55,6 +55,11 @@ class ChatHistoryFragment : Fragment() {
                 .navigate(ChatHistoryFragmentDirections.actionChatHistoryFragmentToNewChatFragment())
         }
 
+        binding.addFriendsButton.setOnClickListener {
+            it.findNavController()
+                .navigate(ChatHistoryFragmentDirections.actionChatHistoryFragmentToFindFriendsFragment())
+        }
+
         binding.friendList.adapter = adapter
 
         binding.lifecycleOwner = this

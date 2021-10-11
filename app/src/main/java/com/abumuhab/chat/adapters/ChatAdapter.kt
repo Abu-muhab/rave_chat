@@ -22,12 +22,12 @@ class ChatAdapter :
                 val outgoingBinding = binding as MessageCardBinding
                 outgoingBinding.content = message.content
                 outgoingBinding.messageBreak =
-                    !(nextMessage != null && message.sender == nextMessage.sender)
+                    !(nextMessage != null && message.from == nextMessage.from)
             } else {
                 val incomingBinding = binding as MessageCardIncomingBinding
                 incomingBinding.content = message.content
                 incomingBinding.messageBreak =
-                    !(nextMessage != null && message.sender == nextMessage.sender)
+                    !(nextMessage != null && message.from == nextMessage.from)
             }
         }
     }
@@ -54,8 +54,8 @@ class ChatAdapter :
 
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
-        if (item.sender == "abumuhab") {
-            return 0;
+        if (item.from == "abumuhab") {
+            return 0
         }
         return 1
     }

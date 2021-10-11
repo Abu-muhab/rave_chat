@@ -8,5 +8,6 @@ class User(
     @Json(name = "_id") val id: String,
     @Nullable val avatarUrl: String?,
     @Nullable val snapId: String?,
-    @Nullable val displayName: String?
+    @Nullable val displayName: String?,
+    val userName: String
 )

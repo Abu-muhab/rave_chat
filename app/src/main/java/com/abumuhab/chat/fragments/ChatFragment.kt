@@ -24,6 +24,7 @@ import com.abumuhab.chat.viewmodels.LoginViewModelFactory
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import java.util.*
 
 class ChatFragment : Fragment() {
     private lateinit var viewModel: ChatViewModel
@@ -48,7 +49,13 @@ class ChatFragment : Fragment() {
 
         binding.sendButton.setOnClickListener{
             Log.i("MSG",binding.messageBox.text.toString())
-            viewModel.sendMessage(binding.messageBox.text.toString())
+            viewModel.sendMessage(
+                Message(
+                    binding.messageBox.text.toString(),
+                    Calendar.getInstance().time,
+                    viewModel.userData.value!!.user.userName,
+                    "@someuser"
+            ))
         }
 
         binding.preview = preview

@@ -1,7 +1,6 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,13 +10,20 @@ import com.abumuhab.chat.models.ChatPreview
 import com.abumuhab.chat.models.Message
 import com.abumuhab.chat.models.UserData
 import com.abumuhab.chat.network.ChatSocketIO
-import com.abumuhab.chat.util.showBasicMessageDialog
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import io.socket.client.Socket
 import kotlinx.coroutines.launch
+import java.util.*
 
 class ChatViewModel(
     private val userDataDao: UserDataDao, preview: ChatPreview,
-    application: Application
+    private val application: Application
 ) : ViewModel() {
+    private var socket: Socket? = null
+
     private val _userData = MutableLiveData<UserData?>()
     val userData: LiveData<UserData?>
         get() = _userData
@@ -27,57 +33,54 @@ class ChatViewModel(
     init {
         getLoggedInUser()
 
-        val socket = ChatSocketIO.getInstance()
-        socket.on("connect") {
-            Log.i("SOC", "socket connected")
-        }
-
-        socket.on("error") {
-            Log.i("SOC", "socket error")
-        }
-
-        socket.connect()
-
         messages.value = arrayListOf(
             Message(
                 "hello",
-                "12:30",
-                "abumuhab"
+                Calendar.getInstance().time,
+                "abumuhab",
+                preview.name
             ),
             Message(
                 "Hii",
-                "12:31",
-                preview?.name!!
+                Calendar.getInstance().time,
+                preview.name,
+                "abumuhab"
             ),
             Message(
                 "i was wondering if we could work on soemthing",
-                "12:30",
-                "abumuhab"
+                Calendar.getInstance().time,
+                "abumuhab",
+                preview.name
             ),
             Message(
                 "i have this mad idea",
-                "12:30",
-                "abumuhab"
+                Calendar.getInstance().time,
+                "abumuhab",
+                preview.name
             ),
             Message(
                 "Let's hear it. i am excited about this my gee!!",
-                "12:30",
-                preview.name
+                Calendar.getInstance().time,
+                preview.name,
+                "abumuhab"
             ),
             Message(
                 "I need something to work on",
-                "12:30",
-                preview.name
+                Calendar.getInstance().time,
+                preview.name,
+                "abumuhab"
             ),
             Message(
                 "this should do it",
-                "12:30",
-                preview.name
+                Calendar.getInstance().time,
+                preview.name,
+                "abumuhab"
             ),
             Message(
                 "I need something to work on. I need something to work on. I need something to work on. I need something to work on. I need something to work on",
-                "12:30",
-                preview.name
+                Calendar.getInstance().time,
+                preview.name,
+                "abumuhab"
             ),
         )
     }
@@ -85,11 +88,31 @@ class ChatViewModel(
     private fun getLoggedInUser() {
         viewModelScope.launch {
             _userData.value = userDataDao.getLoggedInUser()
+            connectToChatSocket()
         }
     }
 
-    fun sendMessage(message: String){
-        val socket= ChatSocketIO.getInstance()
-        socket.emit("message","Hello, world")
+    fun sendMessage(message: Message) {
+        if (socket != null) {
+            val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory())
+                .add(Date::class.java, Rfc3339DateJsonAdapter()).build()
+            val jsonAdapter: JsonAdapter<ChatSocketIO.MessagePayload> =
+                moshi.adapter(ChatSocketIO.MessagePayload::class.java)
+            socket!!.emit(
+                "message", jsonAdapter.toJson(
+                    ChatSocketIO.MessagePayload(
+                        "new-chat",
+                        message
+                    )
+                )
+            )
+        }
+    }
+
+    private fun connectToChatSocket() {
+        socket = ChatSocketIO.getInstance(_userData.value!!.authToken,application)
+        if (!socket!!.connected()) {
+            socket!!.connect()
+        }
     }
 }

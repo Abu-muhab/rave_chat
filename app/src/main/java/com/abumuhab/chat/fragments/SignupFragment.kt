@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 
 class SignupFragment : Fragment() {
@@ -50,28 +51,32 @@ class SignupFragment : Fragment() {
                 val variables = mapOf<String, Any>()
                 viewModel.setShowSnapchatSpinner(true)
                 lifecycleScope.launch {
-                    SnapLogin.fetchUserData(
-                        requireContext(),
-                        query,
-                        variables,
-                        object : FetchUserDataCallback {
-                            override fun onSuccess(userDataResponse: UserDataResponse?) {
-                                if (userDataResponse == null || userDataResponse.data == null) {
-                                    viewModel.setShowSnapchatSpinner(false)
-                                    return
+                    try{
+                        SnapLogin.fetchUserData(
+                            requireContext(),
+                            query,
+                            variables,
+                            object : FetchUserDataCallback {
+                                override fun onSuccess(userDataResponse: UserDataResponse?) {
+                                    if (userDataResponse == null || userDataResponse.data == null) {
+                                        viewModel.setShowSnapchatSpinner(false)
+                                        return
+                                    }
+                                    val meData = userDataResponse.data.me ?: return
+                                    val avatarUrl = meData.bitmojiData.selfie
+                                    val name = meData.displayName
+                                    val snapId = meData.externalId
+
+                                    snapSignup(snapId, avatarUrl, name)
                                 }
-                                val meData = userDataResponse.data.me ?: return
-                                val avatarUrl = meData.bitmojiData.selfie
-                                val name = meData.displayName
-                                val snapId = meData.externalId
 
-                                snapSignup(snapId, avatarUrl, name)
-                            }
-
-                            override fun onFailure(isNetworkError: Boolean, statusCode: Int) {
-                                viewModel.setShowSnapchatSpinner(false)
-                            }
-                        })
+                                override fun onFailure(isNetworkError: Boolean, statusCode: Int) {
+                                    viewModel.setShowSnapchatSpinner(false)
+                                }
+                            })
+                    }catch (exception:Exception){
+                        Log.e("MSG",exception.message.toString())
+                    }
                 }
             }
 
@@ -193,12 +198,14 @@ class SignupFragment : Fragment() {
     }
 
     private fun snapSignup(snapId: String, avatarUrl: String, displayName: String) {
+        Log.i("HERE","GOT HERE")
         val payload = SnapAuthPayload(snapId, avatarUrl, displayName)
         val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
         val jsonAdapter: JsonAdapter<SnapAuthPayload> = moshi.adapter(SnapAuthPayload::class.java)
         AuthApi.retrofitService.snapAuth(jsonAdapter.toJson(payload)).enqueue(
             object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
+                    Log.i("HERE",response.body().toString())
                     if (response.code() == 200) {
                         val jsonAdapter: JsonAdapter<AuthSuccessResponse> =
                             moshi.adapter(AuthSuccessResponse::class.java)
@@ -216,6 +223,7 @@ class SignupFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.i("HERE",t.message.toString())
                     viewModel.setShowSnapchatSpinner(false)
                 }
 

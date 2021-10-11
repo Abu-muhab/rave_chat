@@ -6,7 +6,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.*
 
-private const val BASE_URL = "https://rave-chat-api.herokuapp.com/"
+
+const val BASE_URL = "https://rave-chat-api.herokuapp.com/"
+const val BASE_URL_TEST = "http://192.168.43.91:4000/"
 
 //private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
@@ -14,7 +16,7 @@ private const val BASE_URL = "https://rave-chat-api.herokuapp.com/"
 private val retrofit = Retrofit.Builder()
 //    .addConverterFactory(MoshiConverterFactory.create(moshi))
     .addConverterFactory(ScalarsConverterFactory.create())
-    .baseUrl(BASE_URL)
+    .baseUrl(BASE_URL_TEST)
     .build()
 
 interface AuthApiService {

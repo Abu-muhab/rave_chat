@@ -13,6 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Chat">
 
         <meta-data android:name="com.snapchat.kit.sdk.clientId" android:value="a398adcc-b79a-42d4-98e5-e8cc16a62d4c" />

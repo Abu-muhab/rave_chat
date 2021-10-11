@@ -3,6 +3,7 @@ package com.abumuhab.chat.fragments
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 class LoginFragment : Fragment() {
     private lateinit var viewModel: LoginViewModel
@@ -47,28 +49,32 @@ class LoginFragment : Fragment() {
                 val variables = mapOf<String, Any>()
                 viewModel.setShowSnapchatSpinner(true)
                 lifecycleScope.launch {
-                    SnapLogin.fetchUserData(
-                        requireContext(),
-                        query,
-                        variables,
-                        object : FetchUserDataCallback {
-                            override fun onSuccess(userDataResponse: UserDataResponse?) {
-                                if (userDataResponse == null || userDataResponse.data == null) {
-                                    viewModel.setShowSnapchatSpinner(true)
-                                    return
+                    try {
+                        SnapLogin.fetchUserData(
+                            requireContext(),
+                            query,
+                            variables,
+                            object : FetchUserDataCallback {
+                                override fun onSuccess(userDataResponse: UserDataResponse?) {
+                                    if (userDataResponse == null || userDataResponse.data == null) {
+                                        viewModel.setShowSnapchatSpinner(true)
+                                        return
+                                    }
+                                    val meData = userDataResponse.data.me ?: return
+                                    val avatarUrl = meData.bitmojiData.selfie
+                                    val name = meData.displayName
+                                    val snapId = meData.externalId
+
+                                    snapSignup(snapId, avatarUrl, name)
                                 }
-                                val meData = userDataResponse.data.me ?: return
-                                val avatarUrl = meData.bitmojiData.selfie
-                                val name = meData.displayName
-                                val snapId = meData.externalId
 
-                                snapSignup(snapId, avatarUrl, name)
-                            }
-
-                            override fun onFailure(isNetworkError: Boolean, statusCode: Int) {
-                                viewModel.setShowSnapchatSpinner(true)
-                            }
-                        })
+                                override fun onFailure(isNetworkError: Boolean, statusCode: Int) {
+                                    viewModel.setShowSnapchatSpinner(true)
+                                }
+                            })
+                    } catch (exception: Exception) {
+                        Log.e("MSG", exception.message.toString())
+                    }
                 }
             }
 

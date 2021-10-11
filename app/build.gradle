@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.abumuhab.chat"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -75,4 +75,9 @@ dependencies {
 
     //for showing image
     implementation "com.github.bumptech.glide:glide:4.12.0"
+
+    implementation ('io.socket:socket.io-client:2.0.1') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
 }

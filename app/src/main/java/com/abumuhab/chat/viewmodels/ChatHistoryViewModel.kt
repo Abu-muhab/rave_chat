@@ -1,6 +1,7 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,9 +10,10 @@ import com.abumuhab.chat.R
 import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.models.ChatPreview
 import com.abumuhab.chat.models.UserData
+import com.abumuhab.chat.network.ChatSocketIO
 import kotlinx.coroutines.launch
 
-class FriendsViewModel(
+class ChatHistoryViewModel(
     private val userDataDao: UserDataDao,
     application: Application
 ) : ViewModel() {
@@ -23,6 +25,18 @@ class FriendsViewModel(
 
     init {
         getLoggedInUser()
+
+        val socket = ChatSocketIO.getInstance()
+        socket.on("connect") {
+            Log.i("SOC","socket connected")
+        }
+
+        socket.on("error") {
+            Log.i("SOC","socket error")
+        }
+
+        socket.connect()
+
         chats.value = arrayListOf(
             ChatPreview(
                 R.drawable.avatar_1,

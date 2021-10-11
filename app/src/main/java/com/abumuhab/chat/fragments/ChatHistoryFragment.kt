@@ -15,11 +15,11 @@ import com.abumuhab.chat.adapters.ChatPreviewAdapter
 import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.AvatarBinding
 import com.abumuhab.chat.databinding.FragmentChatHistoryBinding
-import com.abumuhab.chat.viewmodels.FriendsViewModel
+import com.abumuhab.chat.viewmodels.ChatHistoryViewModel
 import com.abumuhab.chat.viewmodels.LoginViewModelFactory
 
 class ChatHistoryFragment : Fragment() {
-    private lateinit var viewModel: FriendsViewModel
+    private lateinit var viewModel: ChatHistoryViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +32,7 @@ class ChatHistoryFragment : Fragment() {
         val application: Application = requireNotNull(this.activity).application
         val userDao = UserDatabase.getInstance(application).userDataDao
         val viewModelFactory = LoginViewModelFactory(userDao, application)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(FriendsViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(ChatHistoryViewModel::class.java)
 
 
         val adapter = ChatPreviewAdapter()

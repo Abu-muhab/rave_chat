@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.abumuhab.chat.databinding.ChatPreviewBinding
 import com.abumuhab.chat.fragments.ChatHistoryFragmentDirections
 import com.abumuhab.chat.models.ChatPreview
+import com.abumuhab.chat.models.Friend
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -25,11 +26,11 @@ class ChatPreviewAdapter :
             binding.avatar.resourceId = item.imageResource
             binding.previewContainer.setOnClickListener {
                 val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                val jsonAdapter: JsonAdapter<ChatPreview> = moshi.adapter(ChatPreview::class.java)
+                val jsonAdapter: JsonAdapter<Friend> = moshi.adapter(Friend::class.java)
                 it.findNavController()
                     .navigate(
                         ChatHistoryFragmentDirections.actionChatHistoryFragmentToChatFragment(
-                            jsonAdapter.toJson(item)
+                            jsonAdapter.toJson(item.friend)
                         )
                     )
             }
@@ -51,7 +52,7 @@ class ChatPreviewAdapter :
 
 class ChatPreviewDiffCallback : DiffUtil.ItemCallback<ChatPreview>() {
     override fun areItemsTheSame(oldItem: ChatPreview, newItem: ChatPreview): Boolean {
-        return oldItem.name == newItem.name
+        return oldItem.friend.userName == newItem.friend.userName
     }
 
     override fun areContentsTheSame(oldItem: ChatPreview, newItem: ChatPreview): Boolean {

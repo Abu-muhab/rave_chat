@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.abumuhab.chat.R
 import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.models.ChatPreview
+import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.UserData
 import com.abumuhab.chat.network.ChatSocketIO
 import io.socket.client.Socket
@@ -17,7 +18,7 @@ class ChatHistoryViewModel(
     private val userDataDao: UserDataDao,
     private val application: Application
 ) : ViewModel() {
-    private var socket: Socket?=null
+    private var socket: Socket? = null
 
     private val _userData = MutableLiveData<UserData?>()
     val userData: LiveData<UserData?>
@@ -31,61 +32,56 @@ class ChatHistoryViewModel(
         chats.value = arrayListOf(
             ChatPreview(
                 R.drawable.avatar_1,
-                "Emmy",
+                Friend(
+                    "emmy",
+                    "@emmy",
+                    null,
+                    null
+                ),
                 "Yeah. I pushed to prod not long ago",
                 "12:30"
             ),
             ChatPreview(
                 R.drawable.avatar_16,
-                "Jb",
+                Friend(
+                    "jb",
+                    "@jb",
+                    null,
+                    null
+                ),
                 "just withdraw 2k",
                 "12:30"
             ),
             ChatPreview(
                 R.drawable.avatar_22,
-                "Benu",
+                Friend(
+                    "Benu",
+                    "@benu",
+                    null,
+                    null
+                ),
                 "Yo. I came by but didn't meet you",
                 "12:30"
             ),
             ChatPreview(
                 R.drawable.avatar_31,
-                "Abdallah",
+                Friend(
+                    "Abdallah",
+                    "@abdallah",
+                    null,
+                    null
+                ),
                 "The lecturer just came. hurry",
                 "12:30"
             ),
             ChatPreview(
                 R.drawable.avatar_33,
-                "Jefferson",
-                "Its all good man",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_1,
-                "Arturo",
-                "Yeah. I pushed to prod not long ago",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_16,
-                "Tokyo",
-                "just withdraw 2k",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_22,
-                "Casper",
-                "Yo. I came by but didn't meet you",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_31,
-                "Julus",
-                "The lecturer just came. hurry",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_33,
-                "Romero",
+                Friend(
+                    "Jeff",
+                    "@jeff",
+                    null,
+                    null
+                ),
                 "Its all good man",
                 "12:30"
             ),
@@ -99,9 +95,9 @@ class ChatHistoryViewModel(
         }
     }
 
-    private fun connectToChatSocket(){
-        socket = ChatSocketIO.getInstance(_userData.value!!.authToken,application)
-        if(!socket!!.connected()){
+    private fun connectToChatSocket() {
+        socket = ChatSocketIO.getInstance(_userData.value!!.authToken, application)
+        if (!socket!!.connected()) {
             socket!!.connect()
         }
     }

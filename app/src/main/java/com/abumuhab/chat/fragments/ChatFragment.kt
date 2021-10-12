@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.abumuhab.chat.R
 import com.abumuhab.chat.adapters.ChatAdapter
 import com.abumuhab.chat.database.UserDatabase
@@ -21,6 +22,7 @@ import com.abumuhab.chat.viewmodels.ChatViewModelFactory
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.launch
 import java.util.*
 
 class ChatFragment : Fragment() {
@@ -44,27 +46,31 @@ class ChatFragment : Fragment() {
         val viewModelFactory = ChatViewModelFactory(userDao, friend!!, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ChatViewModel::class.java)
 
-        binding.sendButton.setOnClickListener{
-            Log.i("MSG",binding.messageBox.text.toString())
+        binding.sendButton.setOnClickListener {
             viewModel.sendMessage(
                 Message(
                     binding.messageBox.text.toString(),
                     Calendar.getInstance().time,
                     viewModel.userData.value!!.user.userName,
-                    "@someuser"
-            ))
+                    viewModel.friend.userName!!
+                )
+            )
         }
 
         binding.friend = friend
 
-        val adapter = ChatAdapter()
-        binding.messageList.adapter = adapter
+        lifecycleScope.launch {
+            val userData = userDao.getLoggedInUser()
+            val adapter = ChatAdapter(userData!!)
 
-        viewModel.messages.observe(viewLifecycleOwner) {
-            it.reverse()
-            ((binding.messageList.adapter as Any) as ChatAdapter).submitList(it)
-            binding.messageList.post {
-                binding.messageList.scrollToPosition(0)
+            binding.messageList.adapter = adapter
+
+            viewModel.messages.observe(viewLifecycleOwner) {
+                it.reverse()
+                ((binding.messageList.adapter as Any) as ChatAdapter).submitList(it)
+                binding.messageList.post {
+                    binding.messageList.scrollToPosition(0)
+                }
             }
         }
 

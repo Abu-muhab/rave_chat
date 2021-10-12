@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class ChatViewModel(
-    private val userDataDao: UserDataDao, friend: Friend,
+    private val userDataDao: UserDataDao, public val friend: Friend,
     private val application: Application
 ) : ViewModel() {
     private var socket: Socket? = null
@@ -32,59 +32,67 @@ class ChatViewModel(
 
     init {
         getLoggedInUser()
-
-        messages.value = arrayListOf(
-            Message(
-                "hello",
-                Calendar.getInstance().time,
-                "abumuhab",
-                friend.userName.toString(),
-            ),
-            Message(
-                "Hii",
-                Calendar.getInstance().time,
-                friend.userName.toString(), "abumuhab"
-            ),
-            Message(
-                "i was wondering if we could work on soemthing",
-                Calendar.getInstance().time,
-                "abumuhab",
-                friend.userName.toString(),
-            ),
-            Message(
-                "i have this mad idea",
-                Calendar.getInstance().time,
-                "abumuhab",
-                friend.userName.toString(),
-            ),
-            Message(
-                "Let's hear it. i am excited about this my gee!!",
-                Calendar.getInstance().time,
-                friend.userName.toString(), "abumuhab"
-            ),
-            Message(
-                "I need something to work on",
-                Calendar.getInstance().time,
-                friend.userName.toString(), "abumuhab"
-            ),
-            Message(
-                "this should do it",
-                Calendar.getInstance().time,
-                friend.userName.toString(), "abumuhab"
-            ),
-            Message(
-                "I need something to work on. I need something to work on. I need something to work on. I need something to work on. I need something to work on",
-                Calendar.getInstance().time,
-                friend.userName.toString(), "abumuhab"
-            ),
-        )
     }
 
     private fun getLoggedInUser() {
         viewModelScope.launch {
             _userData.value = userDataDao.getLoggedInUser()
             connectToChatSocket()
+            loadMessages()
         }
+    }
+
+    fun loadMessages(){
+        messages.value = arrayListOf(
+            Message(
+                "hello",
+                Calendar.getInstance().time,
+                _userData.value!!.user.userName,
+                null
+            ),
+            Message(
+                "Hii",
+                Calendar.getInstance().time,
+                friend.userName.toString(),
+                null
+            ),
+            Message(
+                "i was wondering if we could work on soemthing",
+                Calendar.getInstance().time,
+                _userData.value!!.user.userName,
+                null
+            ),
+            Message(
+                "i have this mad idea",
+                Calendar.getInstance().time,
+                _userData.value!!.user.userName,
+                null
+            ),
+            Message(
+                "Let's hear it. i am excited about this my gee!!",
+                Calendar.getInstance().time,
+                friend.userName.toString(),
+                null
+            ),
+            Message(
+                "I need something to work on",
+                Calendar.getInstance().time,
+                friend.userName.toString(),
+                null
+            ),
+            Message(
+                "this should do it",
+                Calendar.getInstance().time,
+                friend.userName.toString(),
+                null
+            ),
+            Message(
+                "I need something to work on. I need something to work on. I need something to work on. I need something to work on. I need something to work on",
+                Calendar.getInstance().time,
+                friend.userName.toString(),
+                null
+            ),
+        )
     }
 
     fun sendMessage(message: Message) {

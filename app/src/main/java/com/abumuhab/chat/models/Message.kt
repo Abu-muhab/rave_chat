@@ -7,5 +7,5 @@ data class Message (
     val content: String,
     val time: Date,
     val from: String,
-    val to: String
+    val to: String?
 )

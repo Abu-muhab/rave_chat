@@ -7,12 +7,15 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.databinding.MessageCardBinding
 import com.abumuhab.chat.databinding.MessageCardIncomingBinding
 import com.abumuhab.chat.models.Message
+import com.abumuhab.chat.models.UserData
+import kotlinx.coroutines.coroutineScope
 import java.lang.Exception
 
-class ChatAdapter :
+class ChatAdapter(private val userData: UserData) :
     ListAdapter<Message, ChatAdapter.ViewHolder>(MessageDiffCallback()) {
 
     class ViewHolder(private val binding: ViewDataBinding) :
@@ -54,7 +57,7 @@ class ChatAdapter :
 
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
-        if (item.from == "abumuhab") {
+        if (item.from == userData.user.userName) {
             return 0
         }
         return 1

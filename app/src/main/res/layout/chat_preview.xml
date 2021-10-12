@@ -36,7 +36,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{preview.name}"
+                    android:text="@{preview.friend.displayName}"
                     tools:text="Jason Monroe"
                     android:textColor="@color/primary"
                     android:textStyle="bold"

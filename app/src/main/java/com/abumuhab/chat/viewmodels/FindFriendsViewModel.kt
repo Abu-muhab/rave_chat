@@ -1,17 +1,14 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.abumuhab.chat.R
 import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.UserData
 import com.abumuhab.chat.network.SearchResponse
 import com.abumuhab.chat.network.UserAPi
-import com.abumuhab.chat.util.showBasicMessageDialog
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,19 +27,6 @@ class FindFriendsViewModel(private val userDataDao: UserDataDao, application: Ap
         showLoadingIndicator.value = false
         showRetryMessage.value = false
         showNoMatch.value = false
-
-//        friends.value = arrayListOf(
-//            Friend(
-//                "Abdulmalik",
-//                "@abumuhab", R.drawable.avatar_1,
-//                null
-//            ),
-//            Friend(
-//                "Umaymah",
-//                "@_umaymahS", R.drawable.avatar_1,
-//                null
-//            )
-//        )
     }
 
     private fun getLoggedInUser() {
@@ -56,6 +40,8 @@ class FindFriendsViewModel(private val userDataDao: UserDataDao, application: Ap
             if (userData.value != null) {
                 showLoadingIndicator.value = true
                 showRetryMessage.value = false
+                showNoMatch.value = false
+
                 UserAPi.retrofitService.search(userData.value!!.authToken, limit, page, query)
                     .enqueue(
                         object : Callback<SearchResponse> {
@@ -66,7 +52,9 @@ class FindFriendsViewModel(private val userDataDao: UserDataDao, application: Ap
                                 if (response.body()!!.status) {
                                     friends.value =
                                         response.body()!!.data!!.users as ArrayList<Friend>
-                                    Log.i("FRINDS", friends.value!!.size.toString())
+                                    if (friends.value!!.size == 0) {
+                                        showNoMatch.value = true
+                                    }
                                 } else {
                                     showRetryMessage.value = true;
                                 }
@@ -74,7 +62,6 @@ class FindFriendsViewModel(private val userDataDao: UserDataDao, application: Ap
                             }
 
                             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                                Log.i("FAIL", t.message.toString())
                                 showLoadingIndicator.value = false
                                 showRetryMessage.value = true
                             }

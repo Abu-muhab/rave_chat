@@ -34,10 +34,21 @@ class FindFriendsFragment : Fragment() {
         val viewModelFactory = LoginViewModelFactory(userDao, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(FindFriendsViewModel::class.java)
 
+        binding.errorLayout.errorMessage =
+            "Search result isn't loading. Double-check your internet connection, then try again"
+
+        binding.errorLayout.retryButton.setOnClickListener {
+            hideSoftKeyboard(requireContext(), it)
+            viewModel.findFriends(10, 1, binding.searchField.text.toString())
+        }
+
+        binding.searchButton.setOnClickListener {
+            hideSoftKeyboard(requireContext(), it)
+            viewModel.findFriends(10, 1, binding.searchField.text.toString())
+        }
 
         binding.searchField.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                Log.i("HERE", "DONE")
                 hideSoftKeyboard(requireContext(), v)
                 viewModel.findFriends(10, 1, binding.searchField.text.toString())
                 true
@@ -54,7 +65,7 @@ class FindFriendsFragment : Fragment() {
             }
         }
         binding.friendList.adapter = adapter
-        binding.lifecycleOwner=this
+        binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
         return binding.root

@@ -54,7 +54,7 @@
                     android:background="@drawable/oval_border"
                     android:backgroundTint="@color/accent"
                     android:padding="8dp"
-                    android:src="@drawable/avatar_4"
+                    android:src="@drawable/ic_baseline_person_24"
                     app:imageUrl="@{viewModel.userData==null?null:viewModel.userData.user.avatarUrl}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

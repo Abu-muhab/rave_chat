@@ -59,7 +59,7 @@
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/imageView2"
+                app:layout_constraintEnd_toStartOf="@+id/searchButton"
                 app:hintAnimationEnabled="false"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +71,7 @@
 
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/searchButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/oval_border"

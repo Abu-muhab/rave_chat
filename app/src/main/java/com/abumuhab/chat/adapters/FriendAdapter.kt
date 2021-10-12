@@ -16,12 +16,6 @@ class FriendAdapter:
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Friend) {
             binding.friend = item
-            binding.avatar.large = true
-            if(item.imageResource==null){
-                binding.avatar.resourceId = R.drawable.avatar_1
-            }else{
-                binding.avatar.resourceId = item.imageResource
-            }
             binding.previewContainer.setOnClickListener {
 
             }

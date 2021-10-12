@@ -18,9 +18,17 @@
         android:clickable="true"
         android:focusable="true">
 
-        <include
-            android:id="@+id/avatar"
-            layout="@layout/avatar"/>
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:background="@drawable/oval_border"
+            android:backgroundTint="@color/accent"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_person_24"
+            app:imageUrl="@{friend.avatarUrl}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"

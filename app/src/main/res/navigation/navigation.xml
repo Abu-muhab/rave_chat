@@ -56,7 +56,7 @@
         android:name="com.abumuhab.chat.fragments.ChatFragment"
         tools:layout="@layout/fragment_chat"
         android:label="ChatFragment" >
-        <argument android:name="chatPreview"
+        <argument android:name="friend"
             app:argType="string" />
     </fragment>
     <fragment
@@ -68,5 +68,10 @@
         android:id="@+id/findFriendsFragment"
         android:name="com.abumuhab.chat.fragments.FindFriendsFragment"
         android:label="fragment_find_friends"
-        tools:layout="@layout/fragment_find_friends" />
+        tools:layout="@layout/fragment_find_friends" >
+        <action
+            android:id="@+id/action_findFriendsFragment_to_chatFragment"
+            app:destination="@id/chatFragment"
+            app:popUpTo="@id/chatHistoryFragment" />
+    </fragment>
 </navigation>

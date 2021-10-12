@@ -14,13 +14,10 @@ import com.abumuhab.chat.R
 import com.abumuhab.chat.adapters.ChatAdapter
 import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.FragmentChatBinding
-import com.abumuhab.chat.models.ChatPreview
+import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
-import com.abumuhab.chat.network.AuthPayload
-import com.abumuhab.chat.viewmodels.ChatHistoryViewModel
 import com.abumuhab.chat.viewmodels.ChatViewModel
 import com.abumuhab.chat.viewmodels.ChatViewModelFactory
-import com.abumuhab.chat.viewmodels.LoginViewModelFactory
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -39,12 +36,12 @@ class ChatFragment : Fragment() {
 
         val args = ChatFragmentArgs.fromBundle(requireArguments())
         val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        val jsonAdapter: JsonAdapter<ChatPreview> = moshi.adapter(ChatPreview::class.java)
-        val preview: ChatPreview? = jsonAdapter.fromJson(args.chatPreview)
+        val jsonAdapter: JsonAdapter<Friend> = moshi.adapter(Friend::class.java)
+        val friend: Friend? = jsonAdapter.fromJson(args.friend)
 
         val application: Application = requireNotNull(this.activity).application
         val userDao = UserDatabase.getInstance(application).userDataDao
-        val viewModelFactory = ChatViewModelFactory(userDao, preview!!, application)
+        val viewModelFactory = ChatViewModelFactory(userDao, friend!!, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ChatViewModel::class.java)
 
         binding.sendButton.setOnClickListener{
@@ -58,14 +55,18 @@ class ChatFragment : Fragment() {
             ))
         }
 
-        binding.preview = preview
+        binding.friend = friend
 
         val adapter = ChatAdapter()
-        viewModel.messages.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
-
         binding.messageList.adapter = adapter
+
+        viewModel.messages.observe(viewLifecycleOwner) {
+            it.reverse()
+            ((binding.messageList.adapter as Any) as ChatAdapter).submitList(it)
+            binding.messageList.post {
+                binding.messageList.scrollToPosition(0)
+            }
+        }
 
         binding.lifecycleOwner = this
 

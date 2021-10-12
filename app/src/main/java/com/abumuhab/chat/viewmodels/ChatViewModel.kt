@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abumuhab.chat.database.UserDataDao
-import com.abumuhab.chat.models.ChatPreview
+import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
 import com.abumuhab.chat.models.UserData
 import com.abumuhab.chat.network.ChatSocketIO
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class ChatViewModel(
-    private val userDataDao: UserDataDao, preview: ChatPreview,
+    private val userDataDao: UserDataDao, friend: Friend,
     private val application: Application
 ) : ViewModel() {
     private var socket: Socket? = null
@@ -38,49 +38,44 @@ class ChatViewModel(
                 "hello",
                 Calendar.getInstance().time,
                 "abumuhab",
-                preview.name
+                friend.userName.toString(),
             ),
             Message(
                 "Hii",
                 Calendar.getInstance().time,
-                preview.name,
-                "abumuhab"
+                friend.userName.toString(), "abumuhab"
             ),
             Message(
                 "i was wondering if we could work on soemthing",
                 Calendar.getInstance().time,
                 "abumuhab",
-                preview.name
+                friend.userName.toString(),
             ),
             Message(
                 "i have this mad idea",
                 Calendar.getInstance().time,
                 "abumuhab",
-                preview.name
+                friend.userName.toString(),
             ),
             Message(
                 "Let's hear it. i am excited about this my gee!!",
                 Calendar.getInstance().time,
-                preview.name,
-                "abumuhab"
+                friend.userName.toString(), "abumuhab"
             ),
             Message(
                 "I need something to work on",
                 Calendar.getInstance().time,
-                preview.name,
-                "abumuhab"
+                friend.userName.toString(), "abumuhab"
             ),
             Message(
                 "this should do it",
                 Calendar.getInstance().time,
-                preview.name,
-                "abumuhab"
+                friend.userName.toString(), "abumuhab"
             ),
             Message(
                 "I need something to work on. I need something to work on. I need something to work on. I need something to work on. I need something to work on",
                 Calendar.getInstance().time,
-                preview.name,
-                "abumuhab"
+                friend.userName.toString(), "abumuhab"
             ),
         )
     }
@@ -110,7 +105,7 @@ class ChatViewModel(
     }
 
     private fun connectToChatSocket() {
-        socket = ChatSocketIO.getInstance(_userData.value!!.authToken,application)
+        socket = ChatSocketIO.getInstance(_userData.value!!.authToken, application)
         if (!socket!!.connected()) {
             socket!!.connect()
         }

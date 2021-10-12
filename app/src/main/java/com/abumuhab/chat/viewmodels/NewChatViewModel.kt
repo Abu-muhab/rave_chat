@@ -14,11 +14,13 @@ class NewChatViewModel(private val userDataDao: UserDataDao,application: Applica
         friends.value = arrayListOf(
             Friend(
                 "Abdulmalik",
-                "@abumuhab", R.drawable.avatar_1
+                "@abumuhab", R.drawable.avatar_1,
+                null
             ),
             Friend(
                 "Umaymah",
-                "@_umaymahS", R.drawable.avatar_1
+                "@_umaymahS", R.drawable.avatar_1,
+                null
             )
         )
     }

@@ -2,7 +2,10 @@ package com.abumuhab.chat.util
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.google.android.material.textfield.TextInputLayout
 
 fun showEditTextError(input: TextInputLayout, message: String) {
@@ -23,6 +26,11 @@ fun validateEmailField(value: String): String? {
         return "Not a valid email address"
     }
     return null
+}
+
+fun hideSoftKeyboard(context: Context,view:View){
+    val imm: InputMethodManager= context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken,0)
 }
 
 

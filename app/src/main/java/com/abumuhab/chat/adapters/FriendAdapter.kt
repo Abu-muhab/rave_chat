@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.abumuhab.chat.R
 import com.abumuhab.chat.databinding.FriendTileBinding
 import com.abumuhab.chat.models.Friend
 
@@ -16,7 +17,11 @@ class FriendAdapter:
         fun bind(item: Friend) {
             binding.friend = item
             binding.avatar.large = true
-            binding.avatar.resourceId = item.imageResource
+            if(item.imageResource==null){
+                binding.avatar.resourceId = R.drawable.avatar_1
+            }else{
+                binding.avatar.resourceId = item.imageResource
+            }
             binding.previewContainer.setOnClickListener {
 
             }

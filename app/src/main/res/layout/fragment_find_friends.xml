@@ -6,6 +6,10 @@
 
     <data>
 
+        <import type="com.abumuhab.chat.R" />
+
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.abumuhab.chat.viewmodels.FindFriendsViewModel" />
@@ -44,14 +48,13 @@
             android:orientation="horizontal"
             android:paddingStart="20dp"
             android:paddingEnd="10dp"
-            app:layout_constraintBottom_toTopOf="@id/friendList"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title">
 
             <EditText
-                android:id="@+id/textInputLayout"
+                android:id="@+id/searchField"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
@@ -82,22 +85,59 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/textInputLayout"
+                app:layout_constraintStart_toEndOf="@+id/searchField"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/primary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+        <LinearLayout
+            android:id="@+id/noFriendList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_top_container"
+            android:backgroundTint="@color/white"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:overScrollMode="never"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:visibility="@{viewModel.showNoMatch==true||viewModel.showLoadingIndicator==true||viewModel.showRetryMessage==true?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout2">
+
+            <include
+                layout="@layout/no_internet_layout"
+                android:visibility="@{viewModel.showRetryMessage==true? View.VISIBLE: View.GONE}" />
+
+            <ProgressBar
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:indeterminateTint="@color/primary"
+                android:visibility="@{viewModel.showLoadingIndicator==true? View.VISIBLE: View.GONE}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No match found"
+                android:visibility="@{viewModel.showNoMatch==false?View.GONE:View.VISIBLE}" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/friendList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/rounded_top_container"
             android:backgroundTint="@color/white"
             android:overScrollMode="never"
             android:paddingLeft="20dp"
             android:paddingTop="40dp"
             android:paddingRight="20dp"
+            android:visibility="@{viewModel.showNoMatch==true||viewModel.showLoadingIndicator==true||viewModel.showRetryMessage==true?View.GONE:View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

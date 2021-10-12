@@ -13,7 +13,7 @@ const val BASE_URL_TEST = "http://192.168.43.91:4000/"
 //private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
 
-private val retrofit = Retrofit.Builder()
+private val retrofit: Retrofit = Retrofit.Builder()
 //    .addConverterFactory(MoshiConverterFactory.create(moshi))
     .addConverterFactory(ScalarsConverterFactory.create())
     .baseUrl(BASE_URL_TEST)
@@ -38,6 +38,7 @@ object AuthApi {
     val retrofitService: AuthApiService by lazy {
         retrofit.create(AuthApiService::class.java)
     }
+
 }
 
 

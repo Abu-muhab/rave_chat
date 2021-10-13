@@ -43,12 +43,15 @@ class ChatFragment : Fragment() {
 
         val application: Application = requireNotNull(this.activity).application
         val userDao = UserDatabase.getInstance(application).userDataDao
-        val viewModelFactory = ChatViewModelFactory(userDao, friend!!, application)
+        val messageDao = UserDatabase.getInstance(application).messageDao
+        val viewModelFactory = ChatViewModelFactory(messageDao, userDao, friend!!, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ChatViewModel::class.java)
 
         binding.sendButton.setOnClickListener {
+            Log.i("TIME", Calendar.getInstance().time.toString())
             viewModel.sendMessage(
                 Message(
+                    0L,
                     binding.messageBox.text.toString(),
                     Calendar.getInstance().time,
                     viewModel.userData.value!!.user.userName,
@@ -66,10 +69,9 @@ class ChatFragment : Fragment() {
             binding.messageList.adapter = adapter
 
             viewModel.messages.observe(viewLifecycleOwner) {
-                it.reverse()
-                ((binding.messageList.adapter as Any) as ChatAdapter).submitList(it)
+                (binding.messageList.adapter as ChatAdapter).submitList(it)
                 binding.messageList.post {
-                    binding.messageList.scrollToPosition(0)
+                    binding.messageList.layoutManager!!.scrollToPosition(it.size-1)
                 }
             }
         }

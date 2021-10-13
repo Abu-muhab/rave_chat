@@ -1,10 +1,12 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abumuhab.chat.database.MessageDao
 import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
@@ -19,6 +21,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class ChatViewModel(
+    private val messageDao: MessageDao,
     private val userDataDao: UserDataDao, public val friend: Friend,
     private val application: Application
 ) : ViewModel() {
@@ -29,8 +32,10 @@ class ChatViewModel(
         get() = _userData
 
     var messages = MutableLiveData<ArrayList<Message>>()
+    private var latestMessage: LiveData<Message>? = null
 
     init {
+        messages.value= arrayListOf()
         getLoggedInUser()
     }
 
@@ -38,64 +43,45 @@ class ChatViewModel(
         viewModelScope.launch {
             _userData.value = userDataDao.getLoggedInUser()
             connectToChatSocket()
-            loadMessages()
+//            loadDummyMessages()
+            listenForNewMessages()
         }
     }
 
-    fun loadMessages(){
+    private fun listenForNewMessages() {
+        viewModelScope.launch {
+            latestMessage = messageDao.getLatestMessage()
+            latestMessage!!.observeForever { it ->
+                it?.let { it ->
+                    messages.value!!.add(it)
+                    messages.value = messages.value
+                }
+            }
+        }
+    }
+
+//    override fun onCleared() {
+//        super.onCleared()
+//        latestMessage
+//    }
+
+
+    private fun loadDummyMessages() {
         messages.value = arrayListOf(
             Message(
+                0L,
                 "hello",
                 Calendar.getInstance().time,
                 _userData.value!!.user.userName,
                 null
-            ),
-            Message(
-                "Hii",
-                Calendar.getInstance().time,
-                friend.userName.toString(),
-                null
-            ),
-            Message(
-                "i was wondering if we could work on soemthing",
-                Calendar.getInstance().time,
-                _userData.value!!.user.userName,
-                null
-            ),
-            Message(
-                "i have this mad idea",
-                Calendar.getInstance().time,
-                _userData.value!!.user.userName,
-                null
-            ),
-            Message(
-                "Let's hear it. i am excited about this my gee!!",
-                Calendar.getInstance().time,
-                friend.userName.toString(),
-                null
-            ),
-            Message(
-                "I need something to work on",
-                Calendar.getInstance().time,
-                friend.userName.toString(),
-                null
-            ),
-            Message(
-                "this should do it",
-                Calendar.getInstance().time,
-                friend.userName.toString(),
-                null
-            ),
-            Message(
-                "I need something to work on. I need something to work on. I need something to work on. I need something to work on. I need something to work on",
-                Calendar.getInstance().time,
-                friend.userName.toString(),
-                null
-            ),
+            )
         )
     }
 
     fun sendMessage(message: Message) {
+        viewModelScope.launch {
+            messageDao.insert(message)
+        }
         if (socket != null) {
             val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory())
                 .add(Date::class.java, Rfc3339DateJsonAdapter()).build()

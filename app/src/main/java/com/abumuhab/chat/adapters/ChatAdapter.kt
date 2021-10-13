@@ -66,11 +66,10 @@ class ChatAdapter(private val userData: UserData) :
 
 class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
     override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
-        return oldItem.content == newItem.content
+        return oldItem.dbId == newItem.dbId
     }
 
     override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
-        return oldItem == newItem
+        return oldItem.content == newItem.content
     }
-
 }

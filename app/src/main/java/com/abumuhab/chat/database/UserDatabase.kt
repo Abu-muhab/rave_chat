@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.abumuhab.chat.models.Message
 import com.abumuhab.chat.models.UserData
 
 
-@Database(entities = [UserData::class], version = 4, exportSchema = false)
+@Database(entities = [UserData::class, Message::class], version = 5, exportSchema = false)
 abstract class UserDatabase : RoomDatabase() {
     abstract val userDataDao: UserDataDao
+    abstract val messageDao: MessageDao
 
     companion object {
         @Volatile

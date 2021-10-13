@@ -1,7 +1,6 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,6 +25,7 @@ class ChatViewModel(
     private val application: Application
 ) : ViewModel() {
     private var socket: Socket? = null
+    var observer: androidx.lifecycle.Observer<Message>? = null
 
     private val _userData = MutableLiveData<UserData?>()
     val userData: LiveData<UserData?>
@@ -35,7 +35,7 @@ class ChatViewModel(
     private var latestMessage: LiveData<Message>? = null
 
     init {
-        messages.value= arrayListOf()
+        messages.value = arrayListOf()
         getLoggedInUser()
     }
 
@@ -43,28 +43,44 @@ class ChatViewModel(
         viewModelScope.launch {
             _userData.value = userDataDao.getLoggedInUser()
             connectToChatSocket()
-//            loadDummyMessages()
-            listenForNewMessages()
+            loadMessages()
+//            listenForNewMessages()
         }
     }
 
     private fun listenForNewMessages() {
         viewModelScope.launch {
             latestMessage = messageDao.getLatestMessage()
-            latestMessage!!.observeForever { it ->
+            observer = androidx.lifecycle.Observer<Message> {
                 it?.let { it ->
                     messages.value!!.add(it)
                     messages.value = messages.value
                 }
             }
+            latestMessage!!.observeForever(observer!!)
         }
     }
 
-//    override fun onCleared() {
-//        super.onCleared()
-//        latestMessage
-//    }
+    override fun onCleared() {
+        super.onCleared()
+        latestMessage?.let {
+            if(observer!==null){
+                it.removeObserver(observer!!)
+            }
+        }
+    }
 
+
+    private fun loadMessages() {
+        viewModelScope.launch {
+            val array = arrayListOf<Message>()
+            array.addAll(messageDao.getMessages().toList())
+            array.reverse()
+            array.removeLast()
+            messages.value = array
+            listenForNewMessages()
+        }
+    }
 
     private fun loadDummyMessages() {
         messages.value = arrayListOf(

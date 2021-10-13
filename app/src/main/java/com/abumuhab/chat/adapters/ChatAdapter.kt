@@ -1,21 +1,18 @@
 package com.abumuhab.chat.adapters
 
-
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.databinding.MessageCardBinding
 import com.abumuhab.chat.databinding.MessageCardIncomingBinding
 import com.abumuhab.chat.models.Message
 import com.abumuhab.chat.models.UserData
-import kotlinx.coroutines.coroutineScope
 import java.lang.Exception
 
-class ChatAdapter(private val userData: UserData) :
+class ChatAdapter(public  var userData: UserData?) :
     ListAdapter<Message, ChatAdapter.ViewHolder>(MessageDiffCallback()) {
 
     class ViewHolder(private val binding: ViewDataBinding) :
@@ -57,7 +54,7 @@ class ChatAdapter(private val userData: UserData) :
 
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
-        if (item.from == userData.user.userName) {
+        if (item.from == userData!!.user.userName) {
             return 0
         }
         return 1
@@ -66,7 +63,7 @@ class ChatAdapter(private val userData: UserData) :
 
 class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
     override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
-        return oldItem.dbId == newItem.dbId
+        return oldItem == newItem
     }
 
     override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {

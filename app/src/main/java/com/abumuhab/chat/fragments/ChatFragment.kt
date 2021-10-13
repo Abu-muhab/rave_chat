@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import com.abumuhab.chat.R
 import com.abumuhab.chat.adapters.ChatAdapter
 import com.abumuhab.chat.database.UserDatabase
@@ -62,17 +63,26 @@ class ChatFragment : Fragment() {
 
         binding.friend = friend
 
+        val adapter = ChatAdapter(null)
+
+        binding.messageList.adapter = adapter
+
         lifecycleScope.launch {
             val userData = userDao.getLoggedInUser()
-            val adapter = ChatAdapter(userData!!)
 
-            binding.messageList.adapter = adapter
+            (binding.messageList.adapter as ChatAdapter).userData = userData
 
             viewModel.messages.observe(viewLifecycleOwner) {
-                (binding.messageList.adapter as ChatAdapter).submitList(it)
-                binding.messageList.post {
-                    binding.messageList.layoutManager!!.scrollToPosition(it.size-1)
+                (binding.messageList.adapter as ChatAdapter).apply {
+                    val list = it.toMutableList()
+                    list.reverse()
+                    this.submitList(list)
+                    binding.messageList.scrollToPosition(0)
+                    binding.messageList.post {
+                        binding.messageList.scrollToPosition(0)
+                    }
                 }
+
             }
         }
 

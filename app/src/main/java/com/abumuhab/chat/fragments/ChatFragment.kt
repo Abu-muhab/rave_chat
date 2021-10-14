@@ -17,6 +17,7 @@ import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.FragmentChatBinding
 import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
+import com.abumuhab.chat.util.hideSoftKeyboard
 import com.abumuhab.chat.viewmodels.ChatViewModel
 import com.abumuhab.chat.viewmodels.ChatViewModelFactory
 import com.squareup.moshi.JsonAdapter
@@ -59,6 +60,8 @@ class ChatFragment : Fragment() {
                     viewModel.friend.userName!!
                 )
             )
+            binding.messageBox.text!!.clear()
+            hideSoftKeyboard(requireContext(), binding.messageBox)
         }
 
         binding.friend = friend
@@ -74,7 +77,10 @@ class ChatFragment : Fragment() {
 
             viewModel.messages.observe(viewLifecycleOwner) {
                 (binding.messageList.adapter as ChatAdapter).submitList(it.toList()) {
-                    (binding.messageList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(it.size-1,0)
+                    (binding.messageList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                        it.size - 1,
+                        0
+                    )
                 }
             }
         }

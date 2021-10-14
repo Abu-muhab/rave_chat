@@ -44,7 +44,6 @@ class ChatViewModel(
             _userData.value = userDataDao.getLoggedInUser()
             connectToChatSocket()
             loadMessages()
-//            listenForNewMessages()
         }
     }
 
@@ -78,18 +77,6 @@ class ChatViewModel(
             messages.value = array
             listenForNewMessages()
         }
-    }
-
-    private fun loadDummyMessages() {
-        messages.value = arrayListOf(
-            Message(
-                0L,
-                "hello",
-                Calendar.getInstance().time,
-                _userData.value!!.user.userName,
-                null
-            )
-        )
     }
 
     fun sendMessage(message: Message) {

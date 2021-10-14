@@ -5,9 +5,15 @@
     tools:context=".fragments.ChatFragment">
 
     <data>
+
+        <import type="android.view.View"/>
         <variable
             name="friend"
             type="com.abumuhab.chat.models.Friend" />
+
+        <variable
+            name="viewModel"
+            type="com.abumuhab.chat.viewmodels.ChatViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -126,7 +132,6 @@
                 android:orientation="vertical"
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:reverseLayout="true"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -32,7 +32,7 @@ class ChatViewModel(
         get() = _userData
 
     var messages = MutableLiveData<ArrayList<Message>>()
-    private var latestMessage: LiveData<Message>? = null
+    var latestMessage = MutableLiveData<Message>()
 
     init {
         messages.value = arrayListOf()
@@ -50,20 +50,18 @@ class ChatViewModel(
 
     private fun listenForNewMessages() {
         viewModelScope.launch {
-            latestMessage = messageDao.getLatestMessage()
             observer = androidx.lifecycle.Observer<Message> {
-                it?.let { it ->
-                    messages.value!!.add(it)
-                    messages.value = messages.value
-                }
+                latestMessage.value=it
+                messages.value!!.add(it)
+                messages.value=messages.value
             }
-            latestMessage!!.observeForever(observer!!)
+            messageDao.getLatestMessage().observeForever(observer!!)
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        latestMessage?.let {
+        latestMessage.let {
             if(observer!==null){
                 it.removeObserver(observer!!)
             }

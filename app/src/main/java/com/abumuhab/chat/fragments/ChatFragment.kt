@@ -2,6 +2,7 @@ package com.abumuhab.chat.fragments
 
 import android.app.Application
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.abumuhab.chat.R
 import com.abumuhab.chat.adapters.ChatAdapter
@@ -48,8 +51,9 @@ class ChatFragment : Fragment() {
         val viewModelFactory = ChatViewModelFactory(messageDao, userDao, friend!!, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ChatViewModel::class.java)
 
+
+
         binding.sendButton.setOnClickListener {
-            Log.i("TIME", Calendar.getInstance().time.toString())
             viewModel.sendMessage(
                 Message(
                     0L,
@@ -70,21 +74,16 @@ class ChatFragment : Fragment() {
         lifecycleScope.launch {
             val userData = userDao.getLoggedInUser()
 
-            (binding.messageList.adapter as ChatAdapter).userData = userData
+            adapter.userData = userData
 
             viewModel.messages.observe(viewLifecycleOwner) {
-                (binding.messageList.adapter as ChatAdapter).apply {
-                    val list = it.toMutableList()
-                    list.reverse()
-                    this.submitList(list)
-                    binding.messageList.scrollToPosition(0)
-                    binding.messageList.post {
-                        binding.messageList.scrollToPosition(0)
-                    }
+                (binding.messageList.adapter as ChatAdapter).submitList(it.toList()) {
+                    (binding.messageList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(it.size-1,0)
                 }
-
             }
         }
+
+        binding.viewModel = viewModel
 
         binding.lifecycleOwner = this
 

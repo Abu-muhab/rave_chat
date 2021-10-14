@@ -1,5 +1,6 @@
 package com.abumuhab.chat.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
@@ -12,7 +13,7 @@ import com.abumuhab.chat.models.Message
 import com.abumuhab.chat.models.UserData
 import java.lang.Exception
 
-class ChatAdapter(public  var userData: UserData?) :
+class ChatAdapter(var userData: UserData?) :
     ListAdapter<Message, ChatAdapter.ViewHolder>(MessageDiffCallback()) {
 
     class ViewHolder(private val binding: ViewDataBinding) :
@@ -21,13 +22,24 @@ class ChatAdapter(public  var userData: UserData?) :
             if (itemViewType == 0) {
                 val outgoingBinding = binding as MessageCardBinding
                 outgoingBinding.content = message.content
-                outgoingBinding.messageBreak =
-                    !(nextMessage != null && message.from == nextMessage.from)
+                if (nextMessage == null) {
+                    outgoingBinding.messageBreak = false
+                } else {
+                    if (message.from != nextMessage.from) {
+                        outgoingBinding.messageBreak = true
+                    }
+                }
             } else {
                 val incomingBinding = binding as MessageCardIncomingBinding
                 incomingBinding.content = message.content
-                incomingBinding.messageBreak =
-                    !(nextMessage != null && message.from == nextMessage.from)
+                incomingBinding.messageBreak = false
+                if (nextMessage == null) {
+                    incomingBinding.messageBreak = false
+                } else {
+                    if (message.from != nextMessage.from) {
+                        incomingBinding.messageBreak = true
+                    }
+                }
             }
         }
     }
@@ -63,10 +75,10 @@ class ChatAdapter(public  var userData: UserData?) :
 
 class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
     override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
-        return oldItem == newItem
+        return oldItem.dbId == newItem.dbId
     }
 
     override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
-        return oldItem.content == newItem.content
+        return oldItem == newItem
     }
 }

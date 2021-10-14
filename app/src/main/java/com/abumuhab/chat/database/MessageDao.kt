@@ -12,7 +12,7 @@ interface MessageDao {
     @Insert
     suspend fun insert(message: Message)
 
-    @Query("SELECT * FROM  messages_table ORDER BY time DESC LIMIT 10")
+    @Query("SELECT * FROM  messages_table ORDER BY time DESC LIMIT 100 ")
     suspend fun getMessages(): List<Message>
 
     @Query("SELECT * FROM  messages_table ORDER BY time DESC LIMIT 1")

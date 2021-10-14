@@ -70,6 +70,8 @@ class ChatFragment : Fragment() {
 
         binding.messageList.adapter = adapter
 
+        binding.messageList.itemAnimator=null
+
         lifecycleScope.launch {
             val userData = userDao.getLoggedInUser()
 

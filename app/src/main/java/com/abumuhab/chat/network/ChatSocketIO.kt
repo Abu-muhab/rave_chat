@@ -9,6 +9,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.abumuhab.chat.R
 import com.abumuhab.chat.database.UserDatabase
+import com.abumuhab.chat.models.ChatPreview
+import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -44,9 +46,22 @@ class ChatSocketIO {
                     val messagePayload: MessagePayload? = jsonAdapter.fromJson(it[0].toString())
 
                     val messageDao = UserDatabase.getInstance(application).messageDao
+                    val chatPreviewDao = UserDatabase.getInstance(application).chatPreviewDao
 
                     CoroutineScope(SupervisorJob() + Dispatchers.Main).launch {
                         messageDao.insert(messagePayload!!.message)
+
+                        val chatPreviews =
+                            chatPreviewDao.findChatPreview(messagePayload.message.from)
+                        if (chatPreviews.isEmpty()) {
+                            val chatPreview = ChatPreview(
+                                0L,
+                                messagePayload.senderDetails!!,
+                                messagePayload.message.content,
+                                Calendar.getInstance().time
+                            )
+                            chatPreviewDao.insert(chatPreview)
+                        }
                     }
 
                     //send notification
@@ -85,7 +100,5 @@ class ChatSocketIO {
         }
     }
 
-    data class MessagePayload(val type: String, val message: Message)
-
-
+    data class MessagePayload(val type: String, val message: Message, val senderDetails: Friend?)
 }

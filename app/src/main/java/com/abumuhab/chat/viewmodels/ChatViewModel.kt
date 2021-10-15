@@ -83,7 +83,6 @@ class ChatViewModel(
                     friend.userName.toString()
                 ).toList()
             )
-            Log.i("FFFS", array.size.toString())
             if (array.size > 0) {
                 array.reverse()
                 array.removeLast()
@@ -106,7 +105,8 @@ class ChatViewModel(
                 "message", jsonAdapter.toJson(
                     ChatSocketIO.MessagePayload(
                         "new-chat",
-                        message
+                        message,
+                        null
                     )
                 )
             )

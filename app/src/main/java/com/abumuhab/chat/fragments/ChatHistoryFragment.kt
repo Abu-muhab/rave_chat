@@ -10,12 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.abumuhab.chat.R
 import com.abumuhab.chat.adapters.ChatPreviewAdapter
 import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.databinding.AvatarBinding
 import com.abumuhab.chat.databinding.FragmentChatHistoryBinding
 import com.abumuhab.chat.viewmodels.ChatHistoryViewModel
+import com.abumuhab.chat.viewmodels.ChatHistoryViewModelFactory
 import com.abumuhab.chat.viewmodels.LoginViewModelFactory
 
 class ChatHistoryFragment : Fragment() {
@@ -31,22 +33,29 @@ class ChatHistoryFragment : Fragment() {
 
         val application: Application = requireNotNull(this.activity).application
         val userDao = UserDatabase.getInstance(application).userDataDao
-        val viewModelFactory = LoginViewModelFactory(userDao, application)
+        val chatPreviewDao = UserDatabase.getInstance(application).chatPreviewDao
+        val viewModelFactory = ChatHistoryViewModelFactory(chatPreviewDao, userDao, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ChatHistoryViewModel::class.java)
 
 
         val adapter = ChatPreviewAdapter()
+        binding.friendList.adapter = adapter
+        binding.friendList.itemAnimator = null
 
         viewModel.chats.observe(viewLifecycleOwner) {
             if (it != null) {
-                adapter.submitList(it)
-                it.forEach {
-                    val avatarBinding =
-                        AvatarBinding.inflate(inflater, binding.friendsPreviewLayout, false)
-                    avatarBinding.resourceId = it.imageResource
-                    binding.lifecycleOwner = this
-                    binding.friendsPreviewLayout.addView(avatarBinding.root)
+                adapter.submitList(it.toList()) {
+                    (binding.friendList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                        it.size - 1,
+                        0
+                    )
                 }
+//                it.forEach {
+//                    val avatarBinding =
+//                        AvatarBinding.inflate(inflater, binding.friendsPreviewLayout, false)
+//                    binding.lifecycleOwner = this
+//                    binding.friendsPreviewLayout.addView(avatarBinding.root)
+//                }
             }
         }
 
@@ -59,8 +68,6 @@ class ChatHistoryFragment : Fragment() {
             it.findNavController()
                 .navigate(ChatHistoryFragmentDirections.actionChatHistoryFragmentToFindFriendsFragment())
         }
-
-        binding.friendList.adapter = adapter
 
         binding.lifecycleOwner = this
 

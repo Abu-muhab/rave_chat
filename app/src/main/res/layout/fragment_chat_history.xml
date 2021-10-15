@@ -125,6 +125,8 @@
             android:paddingLeft="20dp"
             android:paddingTop="40dp"
             android:paddingRight="20dp"
+            app:reverseLayout="true"
+            app:stackFromEnd="true"
             android:visibility="@{viewModel.chats.size()==0?View.GONE:View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"

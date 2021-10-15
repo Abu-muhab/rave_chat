@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
 
         <variable
@@ -13,20 +14,29 @@
         android:id="@+id/previewContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginBottom="25dp"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:orientation="horizontal">
 
-        <include
+        <ImageView
             android:id="@+id/avatar"
-            layout="@layout/avatar"/>
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/oval_border"
+            android:backgroundTint="@color/accent"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_person_24"
+            app:imageUrl="@{preview.friend.avatarUrl}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:layout_marginStart="10dp"
+            android:gravity="center"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,31 +46,31 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{preview.friend.displayName}"
-                    tools:text="Jason Monroe"
+                    android:text="@{preview.friend.userName}"
                     android:textColor="@color/primary"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Jason Monroe" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:text="@{preview.date}"
-                    tools:text="12:34"
+                    android:text="@{preview.formattedDate()}"
                     android:textColor="@color/darkGrey"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="12:34" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/accent"
                 android:text="@{preview.lastMessage}"
-                tools:text="Hey there"/>
+                android:textColor="@color/accent"
+                tools:text="Hey there" />
         </LinearLayout>
 
     </LinearLayout>

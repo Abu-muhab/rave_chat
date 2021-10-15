@@ -22,8 +22,6 @@ class ChatPreviewAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ChatPreview) {
             binding.preview = item
-            binding.avatar.large = true
-            binding.avatar.resourceId = item.imageResource
             binding.previewContainer.setOnClickListener {
                 val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
                 val jsonAdapter: JsonAdapter<Friend> = moshi.adapter(Friend::class.java)

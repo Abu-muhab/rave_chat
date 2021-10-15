@@ -5,94 +5,78 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.abumuhab.chat.R
+import com.abumuhab.chat.database.ChatPreviewDao
 import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.models.ChatPreview
-import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.UserData
 import com.abumuhab.chat.network.ChatSocketIO
 import io.socket.client.Socket
 import kotlinx.coroutines.launch
 
 class ChatHistoryViewModel(
+    private val chatPreviewDao: ChatPreviewDao,
     private val userDataDao: UserDataDao,
     private val application: Application
 ) : ViewModel() {
     private var socket: Socket? = null
+    var observer: androidx.lifecycle.Observer<ChatPreview>? = null
 
     private val _userData = MutableLiveData<UserData?>()
     val userData: LiveData<UserData?>
         get() = _userData
 
     var chats = MutableLiveData<ArrayList<ChatPreview>>()
+    var latestChat = MutableLiveData<ChatPreview>()
 
     init {
         getLoggedInUser()
 
-        chats.value = arrayListOf(
-            ChatPreview(
-                R.drawable.avatar_1,
-                Friend(
-                    "emmy",
-                    "@emmy",
-                    null,
-                    null
-                ),
-                "Yeah. I pushed to prod not long ago",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_16,
-                Friend(
-                    "jb",
-                    "@jb",
-                    null,
-                    null
-                ),
-                "just withdraw 2k",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_22,
-                Friend(
-                    "Benu",
-                    "@benu",
-                    null,
-                    null
-                ),
-                "Yo. I came by but didn't meet you",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_31,
-                Friend(
-                    "Abdallah",
-                    "@abdallah",
-                    null,
-                    null
-                ),
-                "The lecturer just came. hurry",
-                "12:30"
-            ),
-            ChatPreview(
-                R.drawable.avatar_33,
-                Friend(
-                    "Jeff",
-                    "@jeff",
-                    null,
-                    null
-                ),
-                "Its all good man",
-                "12:30"
-            ),
-        )
+        chats.value = arrayListOf()
     }
 
     private fun getLoggedInUser() {
         viewModelScope.launch {
             _userData.value = userDataDao.getLoggedInUser()
             connectToChatSocket()
+            loadMessages()
         }
+    }
+
+    private fun listenForNewChats() {
+        viewModelScope.launch {
+            observer = androidx.lifecycle.Observer<ChatPreview> {
+                if (it != null && !chats.value!!.contains(it)) {
+                    latestChat.value = it
+                    chats.value!!.add(it)
+                    chats.value = chats.value
+                }
+            }
+            chatPreviewDao.getLatestChatPreview().observeForever(observer!!)
+        }
+    }
+
+    private fun loadMessages() {
+        viewModelScope.launch {
+            val array = arrayListOf<ChatPreview>()
+            array.addAll(
+                chatPreviewDao.getChatPreviews().toList()
+            )
+            if (array.size > 0) {
+                array.reverse()
+                array.removeLast()
+                chats.value = array
+            }
+            listenForNewChats()
+        }
+    }
+
+    override fun onCleared() {
+        latestChat.let {
+            if (observer !== null) {
+                it.removeObserver(observer!!)
+            }
+        }
+        super.onCleared()
     }
 
     private fun connectToChatSocket() {

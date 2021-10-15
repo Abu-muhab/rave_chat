@@ -1,6 +1,7 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -50,7 +51,7 @@ class ChatViewModel(
     private fun listenForNewMessages() {
         viewModelScope.launch {
             observer = androidx.lifecycle.Observer<Message> {
-                if (!messages.value!!.contains(it)) {
+                if (it != null && !messages.value!!.contains(it)) {
                     latestMessage.value = it
                     messages.value!!.add(it)
                     messages.value = messages.value
@@ -82,9 +83,12 @@ class ChatViewModel(
                     friend.userName.toString()
                 ).toList()
             )
-            array.reverse()
-            array.removeLast()
-            messages.value = array
+            Log.i("FFFS", array.size.toString())
+            if (array.size > 0) {
+                array.reverse()
+                array.removeLast()
+                messages.value = array
+            }
             listenForNewMessages()
         }
     }

@@ -24,7 +24,8 @@
         <LinearLayout
             android:id="@+id/friendsHeader"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:gravity="bottom"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
@@ -61,32 +62,6 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <HorizontalScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/friendsPreviewLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:orientation="horizontal"
-                    android:padding="20dp">
-
-                    <ImageView
-                        android:id="@+id/addFriendsButton"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/oval_border"
-                        android:backgroundTint="@color/accent"
-                        android:padding="8dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:src="@drawable/ic_outline_person_add_24"
-                        app:tint="@color/primary" />
-                </LinearLayout>
-            </HorizontalScrollView>
         </LinearLayout>
 
         <LinearLayout
@@ -122,9 +97,9 @@
             android:background="@drawable/rounded_top_container"
             android:backgroundTint="@color/white"
             android:overScrollMode="never"
-            android:paddingLeft="20dp"
-            android:paddingTop="40dp"
-            android:paddingRight="20dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
             app:reverseLayout="true"
             app:stackFromEnd="true"
             android:visibility="@{viewModel.chats.size()==0?View.GONE:View.VISIBLE}"

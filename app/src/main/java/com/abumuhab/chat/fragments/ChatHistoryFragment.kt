@@ -61,11 +61,6 @@ class ChatHistoryFragment : Fragment() {
 
         binding.newChatButton.setOnClickListener {
             it.findNavController()
-                .navigate(ChatHistoryFragmentDirections.actionChatHistoryFragmentToNewChatFragment())
-        }
-
-        binding.addFriendsButton.setOnClickListener {
-            it.findNavController()
                 .navigate(ChatHistoryFragmentDirections.actionChatHistoryFragmentToFindFriendsFragment())
         }
 

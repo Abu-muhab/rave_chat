@@ -50,17 +50,22 @@ class ChatViewModel(
     private fun listenForNewMessages() {
         viewModelScope.launch {
             observer = androidx.lifecycle.Observer<Message> {
-                latestMessage.value=it
-                messages.value!!.add(it)
-                messages.value=messages.value
+                if (!messages.value!!.contains(it)) {
+                    latestMessage.value = it
+                    messages.value!!.add(it)
+                    messages.value = messages.value
+                }
             }
-            messageDao.getLatestMessage().observeForever(observer!!)
+            messageDao.getLatestMessage(
+                userData.value!!.user.userName,
+                friend.userName.toString()
+            ).observeForever(observer!!)
         }
     }
 
     override fun onCleared() {
         latestMessage.let {
-            if(observer!==null){
+            if (observer !== null) {
                 it.removeObserver(observer!!)
             }
         }
@@ -71,7 +76,12 @@ class ChatViewModel(
     private fun loadMessages() {
         viewModelScope.launch {
             val array = arrayListOf<Message>()
-            array.addAll(messageDao.getMessages().toList())
+            array.addAll(
+                messageDao.getMessages(
+                    _userData.value!!.user.userName,
+                    friend.userName.toString()
+                ).toList()
+            )
             array.reverse()
             array.removeLast()
             messages.value = array

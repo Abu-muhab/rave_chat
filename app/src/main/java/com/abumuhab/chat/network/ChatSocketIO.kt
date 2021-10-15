@@ -3,10 +3,7 @@ package com.abumuhab.chat.network
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -39,8 +36,6 @@ class ChatSocketIO {
                 ).build()
                 socket = IO.socket(URI.create(BASE_URL_TEST + "chat"), options)
                 socket!!.on("message") {
-                    Log.i("NEW MESSAGE", it[0].toString())
-
                     val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory())
                         .add(Date::class.java, Rfc3339DateJsonAdapter()).build()
                     val jsonAdapter: JsonAdapter<MessagePayload> =
@@ -48,17 +43,10 @@ class ChatSocketIO {
 
                     val messagePayload: MessagePayload? = jsonAdapter.fromJson(it[0].toString())
 
-                    //temporary block to simulate reply from friend
-                    messagePayload!!.message.to = messagePayload.message.from
-                    messagePayload.message.from = "@server"
-
-
-                    Log.i("FROM",messagePayload.message.from)
-
                     val messageDao = UserDatabase.getInstance(application).messageDao
 
                     CoroutineScope(SupervisorJob() + Dispatchers.Main).launch {
-                        messageDao.insert(messagePayload.message)
+                        messageDao.insert(messagePayload!!.message)
                     }
 
                     //send notification
@@ -66,16 +54,13 @@ class ChatSocketIO {
                     val builder = NotificationCompat.Builder(application, "chat")
                         .setSmallIcon(R.drawable.ic_baseline_chat_24)
                         .setContentTitle("Messages")
-                        .setContentText(messagePayload.message.content)
+                        .setContentText(messagePayload!!.message.content)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
                     with(NotificationManagerCompat.from(application.baseContext)) {
                         // notificationId is a unique int for each notification that you must define
                         notify(1, builder.build())
                     }
-
-
-                    //add to DB
                 }
             }
             return requireNotNull(socket)

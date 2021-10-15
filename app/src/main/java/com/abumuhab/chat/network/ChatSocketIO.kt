@@ -6,10 +6,12 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.abumuhab.chat.R
+import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.models.Message
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -17,6 +19,7 @@ import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.socket.client.IO
 import io.socket.client.Socket
+import kotlinx.coroutines.*
 import java.net.URI
 import java.util.*
 
@@ -45,12 +48,25 @@ class ChatSocketIO {
 
                     val messagePayload: MessagePayload? = jsonAdapter.fromJson(it[0].toString())
 
+                    //temporary block to simulate reply from friend
+                    messagePayload!!.message.to = messagePayload.message.from
+                    messagePayload.message.from = "@server"
+
+
+                    Log.i("FROM",messagePayload.message.from)
+
+                    val messageDao = UserDatabase.getInstance(application).messageDao
+
+                    CoroutineScope(SupervisorJob() + Dispatchers.Main).launch {
+                        messageDao.insert(messagePayload.message)
+                    }
+
                     //send notification
                     createNotificationChannel()
                     val builder = NotificationCompat.Builder(application, "chat")
                         .setSmallIcon(R.drawable.ic_baseline_chat_24)
                         .setContentTitle("Messages")
-                        .setContentText(messagePayload!!.message.content)
+                        .setContentText(messagePayload.message.content)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
                     with(NotificationManagerCompat.from(application.baseContext)) {

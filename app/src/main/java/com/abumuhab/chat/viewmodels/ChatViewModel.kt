@@ -59,12 +59,12 @@ class ChatViewModel(
     }
 
     override fun onCleared() {
-        super.onCleared()
         latestMessage.let {
             if(observer!==null){
                 it.removeObserver(observer!!)
             }
         }
+        super.onCleared()
     }
 
 

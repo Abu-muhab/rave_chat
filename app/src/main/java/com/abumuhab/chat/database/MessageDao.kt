@@ -12,9 +12,9 @@ interface MessageDao {
     @Insert
     suspend fun insert(message: Message)
 
-    @Query("SELECT * FROM  messages_table ORDER BY time DESC LIMIT 100 ")
+    @Query("SELECT * FROM  messages_table ORDER BY dbId DESC LIMIT 20 ")
     suspend fun getMessages(): List<Message>
 
-    @Query("SELECT * FROM  messages_table ORDER BY time DESC LIMIT 1")
+    @Query("SELECT * FROM  messages_table ORDER BY dbId DESC LIMIT 1")
     fun getLatestMessage(): LiveData<Message>
 }

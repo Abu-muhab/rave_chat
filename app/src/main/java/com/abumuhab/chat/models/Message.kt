@@ -11,10 +11,10 @@ import java.util.*
 @TypeConverters(DateConverter::class)
 data class Message (
     @PrimaryKey(autoGenerate = true) var dbId: Long = 0L,
-    val content: String,
-    val time: Date?,
-    val from: String,
-    val to: String?
+    var content: String,
+    var time: Date?,
+    var from: String,
+    var to: String?
 )
 
 

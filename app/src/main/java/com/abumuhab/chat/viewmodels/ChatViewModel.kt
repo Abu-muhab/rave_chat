@@ -114,7 +114,7 @@ class ChatViewModel(
     }
 
     private fun connectToChatSocket() {
-        socket = ChatSocketIO.getInstance(_userData.value!!.authToken, application)
+        socket = ChatSocketIO.getInstance(_userData.value!!, application)
         if (!socket!!.connected()) {
             socket!!.connect()
         }

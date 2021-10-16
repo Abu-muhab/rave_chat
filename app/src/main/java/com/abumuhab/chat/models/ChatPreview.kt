@@ -10,9 +10,10 @@ import java.util.*
 @TypeConverters(DateConverter::class)
 data class ChatPreview(
     @PrimaryKey(autoGenerate = true) var dbId: Long = 0L,
-    @Embedded val friend: Friend,
-    val lastMessage: String,
-    val dateModified: Date,
+    @Embedded var friend: Friend,
+    var lastMessage: String,
+    var dateModified: Date,
+    var unread: Int
 ) {
     fun formattedDate(): String {
         return dateModified.day.toString() + "/" + dateModified.month.toShort() + "/" + dateModified.year.toString()

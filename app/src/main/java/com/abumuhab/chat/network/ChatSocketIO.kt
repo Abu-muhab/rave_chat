@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -12,6 +13,7 @@ import com.abumuhab.chat.database.UserDatabase
 import com.abumuhab.chat.models.ChatPreview
 import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
+import com.abumuhab.chat.models.UserData
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
@@ -28,12 +30,12 @@ class ChatSocketIO {
         var socket: Socket? = null
         var application: Application? = null
 
-        fun getInstance(authToken: String, application: Application): Socket {
+        fun getInstance(userData: UserData, application: Application): Socket {
             this.application = application
             if (socket == null) {
                 val options = IO.Options.builder().setAuth(
                     mapOf(
-                        "authToken" to authToken
+                        "authToken" to userData.authToken
                     )
                 ).build()
                 socket = IO.socket(URI.create(BASE_URL_TEST + "chat"), options)
@@ -49,18 +51,29 @@ class ChatSocketIO {
                     val chatPreviewDao = UserDatabase.getInstance(application).chatPreviewDao
 
                     CoroutineScope(SupervisorJob() + Dispatchers.Main).launch {
-                        messageDao.insert(messagePayload!!.message)
+                        messagePayload!!.message.read=false
+                        messageDao.insert(messagePayload.message)
 
                         val chatPreviews =
                             chatPreviewDao.findChatPreview(messagePayload.message.from)
+                        val unread = messageDao.getUnreadMessages(
+                            userData.user.userName,
+                            messagePayload.message.from
+                        )
+                        Log.i("SIZEEEE",unread.size.toString())
                         if (chatPreviews.isEmpty()) {
                             val chatPreview = ChatPreview(
                                 0L,
                                 messagePayload.senderDetails!!,
                                 messagePayload.message.content,
-                                Calendar.getInstance().time
+                                Calendar.getInstance().time,
+                                unread.size
                             )
                             chatPreviewDao.insert(chatPreview)
+                        } else {
+                            chatPreviews.first().lastMessage = messagePayload.message.content
+                            chatPreviews.first().unread = unread.size
+                            chatPreviewDao.update(chatPreviews.first())
                         }
                     }
 

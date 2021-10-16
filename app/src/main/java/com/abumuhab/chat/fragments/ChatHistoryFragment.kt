@@ -50,12 +50,6 @@ class ChatHistoryFragment : Fragment() {
                         0
                     )
                 }
-//                it.forEach {
-//                    val avatarBinding =
-//                        AvatarBinding.inflate(inflater, binding.friendsPreviewLayout, false)
-//                    binding.lifecycleOwner = this
-//                    binding.friendsPreviewLayout.addView(avatarBinding.root)
-//                }
             }
         }
 

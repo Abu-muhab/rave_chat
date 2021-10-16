@@ -1,5 +1,6 @@
 package com.abumuhab.chat.models
 
+import androidx.annotation.Nullable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
@@ -14,7 +15,8 @@ data class Message (
     var content: String,
     var time: Date?,
     var from: String,
-    var to: String?
+    var to: String?,
+    var read: Boolean?=true
 )
 
 

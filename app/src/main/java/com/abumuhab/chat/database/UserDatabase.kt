@@ -12,7 +12,7 @@ import com.abumuhab.chat.models.UserData
 
 @Database(
     entities = [UserData::class, Message::class, ChatPreview::class],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class UserDatabase : RoomDatabase() {

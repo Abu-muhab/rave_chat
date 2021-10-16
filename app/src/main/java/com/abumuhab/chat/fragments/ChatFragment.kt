@@ -57,7 +57,8 @@ class ChatFragment : Fragment() {
                     binding.messageBox.text.toString(),
                     Calendar.getInstance().time,
                     viewModel.userData.value!!.user.userName,
-                    viewModel.friend.userName!!
+                    viewModel.friend.userName!!,
+                    null
                 )
             )
             binding.messageBox.text!!.clear()

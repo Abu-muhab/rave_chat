@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="preview"
             type="com.abumuhab.chat.models.ChatPreview" />
@@ -81,26 +83,28 @@
                     tools:text="Hey there hd dhc" />
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:minWidth="20dp"
                     android:layout_height="20dp"
-                    android:backgroundTint="@color/primary_light"
                     android:layout_gravity="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:background="@drawable/oval_border"
+                    android:backgroundTint="@color/primary_light"
                     android:gravity="center"
-                    android:background="@drawable/oval_border">
+                    android:minWidth="20dp"
+                    android:orientation="vertical"
+                    android:visibility="@{preview.unread==0?View.GONE:View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{Integer.toString(preview.unread)}"
+                        android:textAlignment="center"
                         android:textColor="@color/accent"
+                        android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:textAlignment="center"
-                        android:textSize="10sp"
                         tools:text="5" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,11 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abumuhab.chat.database.ChatPreviewDao
 import com.abumuhab.chat.database.MessageDao
 import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.models.Friend
@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class ChatViewModel(
+    private val chatPreviewDao: ChatPreviewDao,
     private val messageDao: MessageDao,
     private val userDataDao: UserDataDao, public val friend: Friend,
     private val application: Application
@@ -45,6 +46,18 @@ class ChatViewModel(
             _userData.value = userDataDao.getLoggedInUser()
             connectToChatSocket()
             loadMessages()
+
+            //chat opened. mark all unread messages as read
+            messageDao.getUnreadMessages(_userData.value!!.user.userName, friend.userName!!)
+                .forEach {
+                    it.read = true
+                    messageDao.update(it)
+                }
+
+            chatPreviewDao.findChatPreview(friend.userName).apply {
+                this.first().unread = 0
+                chatPreviewDao.update(this.first())
+            }
         }
     }
 
@@ -55,6 +68,21 @@ class ChatViewModel(
                     latestMessage.value = it
                     messages.value!!.add(it)
                     messages.value = messages.value
+
+                    //mark as read
+                    it.read = true
+                    viewModelScope.launch {
+                        messageDao.update(it)
+                        val preview = chatPreviewDao.findChatPreview(it.from)
+                        preview.first().lastMessage = it.content
+                        preview.first().unread =
+                            messageDao.getUnreadMessages(
+                                _userData.value!!.user.userName,
+                                it.from
+                            ).size
+
+                        chatPreviewDao.update(preview.first())
+                    }
                 }
             }
             messageDao.getLatestMessage(

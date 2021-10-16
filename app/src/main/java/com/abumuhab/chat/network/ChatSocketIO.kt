@@ -60,7 +60,6 @@ class ChatSocketIO {
                             userData.user.userName,
                             messagePayload.message.from
                         )
-                        Log.i("SIZEEEE",unread.size.toString())
                         if (chatPreviews.isEmpty()) {
                             val chatPreview = ChatPreview(
                                 0L,

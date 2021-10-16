@@ -45,7 +45,10 @@ class ChatFragment : Fragment() {
         val application: Application = requireNotNull(this.activity).application
         val userDao = UserDatabase.getInstance(application).userDataDao
         val messageDao = UserDatabase.getInstance(application).messageDao
-        val viewModelFactory = ChatViewModelFactory(messageDao, userDao, friend!!, application)
+        val chatPreview = UserDatabase.getInstance(application).chatPreviewDao
+
+        val viewModelFactory =
+            ChatViewModelFactory(chatPreview, messageDao, userDao, friend!!, application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ChatViewModel::class.java)
 
 
@@ -71,7 +74,7 @@ class ChatFragment : Fragment() {
 
         binding.messageList.adapter = adapter
 
-        binding.messageList.itemAnimator=null
+        binding.messageList.itemAnimator = null
 
         lifecycleScope.launch {
             val userData = userDao.getLoggedInUser()

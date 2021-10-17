@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.abumuhab.chat.database.ChatPreviewDao
 import com.abumuhab.chat.database.MessageDao
 import com.abumuhab.chat.database.UserDataDao
+import com.abumuhab.chat.models.ChatPreview
 import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
 import com.abumuhab.chat.models.UserData
@@ -54,9 +55,13 @@ class ChatViewModel(
                     messageDao.update(it)
                 }
 
-            chatPreviewDao.findChatPreview(friend.userName).apply {
-                this.first().unread = 0
-                chatPreviewDao.update(this.first())
+            if (_userData.value!!.user.userName != friend.userName) {
+                chatPreviewDao.findChatPreview(friend.userName).apply {
+                    if (this.isNotEmpty()) {
+                        this.first().unread = 0
+                        chatPreviewDao.update(this.first())
+                    }
+                }
             }
         }
     }
@@ -73,15 +78,19 @@ class ChatViewModel(
                     it.read = true
                     viewModelScope.launch {
                         messageDao.update(it)
-                        val preview = chatPreviewDao.findChatPreview(it.from)
-                        preview.first().lastMessage = it.content
-                        preview.first().unread =
-                            messageDao.getUnreadMessages(
-                                _userData.value!!.user.userName,
-                                it.from
-                            ).size
+                        if (it.from != _userData.value!!.user.userName) {
+                            val preview = chatPreviewDao.findChatPreview(it.from)
+                            if (preview.isNotEmpty()) {
+                                preview.first().lastMessage = it.content
+                                preview.first().unread =
+                                    messageDao.getUnreadMessages(
+                                        _userData.value!!.user.userName,
+                                        it.from
+                                    ).size
 
-                        chatPreviewDao.update(preview.first())
+                                chatPreviewDao.update(preview.first())
+                            }
+                        }
                     }
                 }
             }
@@ -122,7 +131,29 @@ class ChatViewModel(
 
     fun sendMessage(message: Message) {
         viewModelScope.launch {
+            message.read = true
             messageDao.insert(message)
+
+            //update or create the chat preview
+            val preview = chatPreviewDao.findChatPreview(friend.userName!!)
+            if (preview.isNotEmpty()) {
+                preview.first().lastMessage = message.content
+                preview.first().unread =
+                    messageDao.getUnreadMessages(
+                        _userData.value!!.user.userName,
+                        friend.userName
+                    ).size
+                chatPreviewDao.update(preview.first())
+            } else {
+                val chatPreview = ChatPreview(
+                    0L,
+                    friend,
+                    message.content,
+                    Calendar.getInstance().time,
+                    0
+                )
+                chatPreviewDao.insert(chatPreview)
+            }
         }
         if (socket != null) {
             val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory())

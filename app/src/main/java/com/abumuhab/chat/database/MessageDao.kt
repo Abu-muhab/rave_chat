@@ -16,7 +16,7 @@ interface MessageDao {
     @Query("SELECT * FROM  messages_table WHERE (`from`=:currentUser AND `to`=:friend) OR (`from`=:friend AND `to`=:currentUser) ORDER BY dbId DESC LIMIT 20 ")
     suspend fun getMessages(currentUser: String, friend: String): List<Message>
 
-    @Query("SELECT * FROM  messages_table WHERE (`from`=:currentUser AND `to`=:friend AND `read`=0) OR (`from`=:friend AND `to`=:currentUser AND `read`=0)")
+    @Query("SELECT * FROM  messages_table WHERE `from`=:friend AND `to`=:currentUser AND `read`=0 ORDER BY dbId ASC")
     suspend fun getUnreadMessages(currentUser: String, friend: String): List<Message>
 
     @Query("SELECT * FROM  messages_table WHERE (`from`=:currentUser AND `to`=:friend) OR (`from`=:friend AND `to`=:currentUser) ORDER BY dbId DESC LIMIT 1")

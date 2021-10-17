@@ -4,7 +4,6 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -39,6 +38,7 @@ class ChatSocketIO {
                     )
                 ).build()
                 socket = IO.socket(URI.create(BASE_URL_TEST + "chat"), options)
+
                 socket!!.on("message") {
                     val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory())
                         .add(Date::class.java, Rfc3339DateJsonAdapter()).build()
@@ -51,42 +51,83 @@ class ChatSocketIO {
                     val chatPreviewDao = UserDatabase.getInstance(application).chatPreviewDao
 
                     CoroutineScope(SupervisorJob() + Dispatchers.Main).launch {
-                        messagePayload!!.message.read=false
-                        messageDao.insert(messagePayload.message)
-
                         val chatPreviews =
-                            chatPreviewDao.findChatPreview(messagePayload.message.from)
-                        val unread = messageDao.getUnreadMessages(
+                            chatPreviewDao.findChatPreview(messagePayload!!.message.from)
+                        var unread = messageDao.getUnreadMessages(
                             userData.user.userName,
                             messagePayload.message.from
                         )
+
                         if (chatPreviews.isEmpty()) {
                             val chatPreview = ChatPreview(
                                 0L,
                                 messagePayload.senderDetails!!,
                                 messagePayload.message.content,
                                 Calendar.getInstance().time,
-                                unread.size
+                                unread.size + 1
                             )
                             chatPreviewDao.insert(chatPreview)
                         } else {
                             chatPreviews.first().lastMessage = messagePayload.message.content
-                            chatPreviews.first().unread = unread.size
+                            chatPreviews.first().unread = unread.size + 1
                             chatPreviewDao.update(chatPreviews.first())
                         }
-                    }
 
-                    //send notification
-                    createNotificationChannel()
-                    val builder = NotificationCompat.Builder(application, "chat")
-                        .setSmallIcon(R.drawable.ic_baseline_chat_24)
-                        .setContentTitle("Messages")
-                        .setContentText(messagePayload!!.message.content)
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        messagePayload.message.read = false
+                        messageDao.insert(messagePayload.message)
 
-                    with(NotificationManagerCompat.from(application.baseContext)) {
-                        // notificationId is a unique int for each notification that you must define
-                        notify(1, builder.build())
+                        unread = messageDao.getUnreadMessages(
+                            userData.user.userName,
+                            messagePayload.message.from
+                        )
+
+                        //send notification
+                        createNotificationChannel()
+                        val notification = NotificationCompat.Builder(application, "chat")
+                            .setSmallIcon(R.drawable.ic_baseline_chat_24)
+                            .setContentTitle(messagePayload.message.from)
+                            .setContentText(messagePayload.message.content)
+                            .setGroup("chats")
+
+                        val style = NotificationCompat.InboxStyle()
+
+                        if (unread.size <= 5) {
+                            unread.forEach {
+                                style.addLine(it.content)
+                            }
+                        } else {
+                            for (x in unread.size - 4..unread.size) {
+                                style.addLine(unread[x - 1].content)
+                            }
+                        }
+
+                        notification.setStyle(style)
+
+                        val groupSummaryNotification =
+                            NotificationCompat.Builder(application, "chat")
+                                .setSmallIcon(R.drawable.ic_baseline_chat_24)
+                                .setContentTitle(messagePayload.message.from)
+                                .setContentText(messagePayload.message.content)
+                                .setGroupSummary(true)
+                                .setGroup("chats")
+
+                        val unreadChats = chatPreviewDao.getUnreadChats()
+                        var totalMessages: Int = 0
+
+                        unreadChats.forEach {
+                            totalMessages += it.unread
+                        }
+
+                        groupSummaryNotification.setStyle(
+                            NotificationCompat.InboxStyle().setSummaryText(
+                                "You have $totalMessages unread messages from ${unreadChats.size} Chats"
+                            )
+                        )
+
+                        with(NotificationManagerCompat.from(application.baseContext)) {
+                            notify(unread.first().dbId.toInt(), notification.build())
+                            notify(-200, groupSummaryNotification.build())
+                        }
                     }
                 }
             }
@@ -113,4 +154,14 @@ class ChatSocketIO {
     }
 
     data class MessagePayload(val type: String, val message: Message, val senderDetails: Friend?)
+
+    class NotificationID {
+        companion object {
+            private var id: Int = 5
+            fun getID(): Int {
+                id += 1
+                return id
+            }
+        }
+    }
 }

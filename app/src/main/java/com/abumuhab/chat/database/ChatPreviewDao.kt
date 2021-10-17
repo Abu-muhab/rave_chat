@@ -18,6 +18,9 @@ interface ChatPreviewDao {
     @Query("SELECT * FROM chats_table ORDER BY dateModified DESC")
     fun getChatPreviews(): LiveData<List<ChatPreview>>
 
+    @Query("SELECT * FROM chats_table WHERE unread>0 ORDER BY dateModified DESC")
+    suspend fun getUnreadChats(): List<ChatPreview>
+
     @Query("SELECT * FROM chats_table WHERE userName = :userName LIMIT 1")
     suspend fun findChatPreview(userName: String): List<ChatPreview>
 }

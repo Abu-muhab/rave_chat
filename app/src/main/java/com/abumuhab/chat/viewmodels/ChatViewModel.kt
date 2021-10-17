@@ -13,6 +13,7 @@ import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
 import com.abumuhab.chat.models.UserData
 import com.abumuhab.chat.network.ChatSocketIO
+import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
@@ -173,9 +174,14 @@ class ChatViewModel(
     }
 
     private fun connectToChatSocket() {
-        socket = ChatSocketIO.getInstance(_userData.value!!, application)
-        if (!socket!!.connected()) {
-            socket!!.connect()
-        }
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    socket = ChatSocketIO.getInstance(_userData.value!!, it.result, application)
+                    if (!socket!!.connected()) {
+                        socket!!.connect()
+                    }
+                }
+            }
     }
 }

@@ -7,6 +7,7 @@ import com.abumuhab.chat.database.UserDataDao
 import com.abumuhab.chat.models.ChatPreview
 import com.abumuhab.chat.models.UserData
 import com.abumuhab.chat.network.ChatSocketIO
+import com.google.firebase.messaging.FirebaseMessaging
 import io.socket.client.Socket
 import kotlinx.coroutines.launch
 
@@ -42,15 +43,20 @@ class ChatHistoryViewModel(
                 val c = arrayListOf<ChatPreview>()
                 c.addAll(it.toList())
                 c.reverse()
-                chats.value=c
+                chats.value = c
             }
         }
     }
 
     private fun connectToChatSocket() {
-        socket = ChatSocketIO.getInstance(_userData.value!!, application)
-        if (!socket!!.connected()) {
-            socket!!.connect()
-        }
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    socket = ChatSocketIO.getInstance(_userData.value!!, it.result, application)
+                    if (!socket!!.connected()) {
+                        socket!!.connect()
+                    }
+                }
+            }
     }
 }

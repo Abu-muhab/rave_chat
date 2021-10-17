@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "601083095306",
+    "project_id": "ravechat-39c2e",
+    "storage_bucket": "ravechat-39c2e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601083095306:android:f3d1aee44ea6ccbb4d32f3",
+        "android_client_info": {
+          "package_name": "com.abumuhab.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "601083095306-7isdd7f24tscb45ptgu161tm9sjo4j9b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsc6zlhHIKAn3gRNA8iF9kAx6v4g5zQl8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "601083095306-7isdd7f24tscb45ptgu161tm9sjo4j9b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

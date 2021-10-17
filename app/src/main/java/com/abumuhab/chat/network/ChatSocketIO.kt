@@ -4,22 +4,19 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
-import com.abumuhab.chat.R
-import com.abumuhab.chat.database.UserDatabase
-import com.abumuhab.chat.models.ChatPreview
+import androidx.work.*
 import com.abumuhab.chat.models.Friend
 import com.abumuhab.chat.models.Message
 import com.abumuhab.chat.models.UserData
+import com.abumuhab.chat.workers.MessageWorker
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.socket.client.IO
 import io.socket.client.Socket
-import kotlinx.coroutines.*
 import java.net.URI
 import java.util.*
 
@@ -29,106 +26,39 @@ class ChatSocketIO {
         var socket: Socket? = null
         var application: Application? = null
 
-        fun getInstance(userData: UserData, application: Application): Socket {
+        fun getInstance(userData: UserData, fcmToken: String, application: Application): Socket {
             this.application = application
+            Log.i("FCM_TOKEN", fcmToken.toString())
             if (socket == null) {
                 val options = IO.Options.builder().setAuth(
                     mapOf(
-                        "authToken" to userData.authToken
+                        "authToken" to userData.authToken,
+                        "fcmToken" to fcmToken
                     )
                 ).build()
                 socket = IO.socket(URI.create(BASE_URL_TEST + "chat"), options)
 
                 socket!!.on("message") {
+                    val messageWorkRequest = OneTimeWorkRequest.Builder(MessageWorker::class.java)
+
+                    val data = Data.Builder()
+                    data.putString("data", it[0].toString())
+                    messageWorkRequest.setInputData(data.build())
+
                     val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory())
                         .add(Date::class.java, Rfc3339DateJsonAdapter()).build()
                     val jsonAdapter: JsonAdapter<MessagePayload> =
                         moshi.adapter(MessagePayload::class.java)
 
-                    val messagePayload: MessagePayload? = jsonAdapter.fromJson(it[0].toString())
+                    val messagePayload: MessagePayload? =
+                        jsonAdapter.fromJson(it[0].toString())
 
-                    val messageDao = UserDatabase.getInstance(application).messageDao
-                    val chatPreviewDao = UserDatabase.getInstance(application).chatPreviewDao
+                    Log.i("KEY_KEY",messagePayload!!.message.id.toString())
 
-                    CoroutineScope(SupervisorJob() + Dispatchers.Main).launch {
-                        val chatPreviews =
-                            chatPreviewDao.findChatPreview(messagePayload!!.message.from)
-                        var unread = messageDao.getUnreadMessages(
-                            userData.user.userName,
-                            messagePayload.message.from
-                        )
-
-                        if (chatPreviews.isEmpty()) {
-                            val chatPreview = ChatPreview(
-                                0L,
-                                messagePayload.senderDetails!!,
-                                messagePayload.message.content,
-                                Calendar.getInstance().time,
-                                unread.size + 1
-                            )
-                            chatPreviewDao.insert(chatPreview)
-                        } else {
-                            chatPreviews.first().lastMessage = messagePayload.message.content
-                            chatPreviews.first().unread = unread.size + 1
-                            chatPreviewDao.update(chatPreviews.first())
-                        }
-
-                        messagePayload.message.read = false
-                        messageDao.insert(messagePayload.message)
-
-                        unread = messageDao.getUnreadMessages(
-                            userData.user.userName,
-                            messagePayload.message.from
-                        )
-
-                        //send notification
-                        createNotificationChannel()
-                        val notification = NotificationCompat.Builder(application, "chat")
-                            .setSmallIcon(R.drawable.ic_baseline_chat_24)
-                            .setContentTitle(messagePayload.message.from)
-                            .setContentText(messagePayload.message.content)
-                            .setGroup("chats")
-
-                        val style = NotificationCompat.InboxStyle()
-
-                        if (unread.size <= 5) {
-                            unread.forEach {
-                                style.addLine(it.content)
-                            }
-                        } else {
-                            for (x in unread.size - 4..unread.size) {
-                                style.addLine(unread[x - 1].content)
-                            }
-                        }
-
-                        notification.setStyle(style)
-
-                        val groupSummaryNotification =
-                            NotificationCompat.Builder(application, "chat")
-                                .setSmallIcon(R.drawable.ic_baseline_chat_24)
-                                .setContentTitle(messagePayload.message.from)
-                                .setContentText(messagePayload.message.content)
-                                .setGroupSummary(true)
-                                .setGroup("chats")
-
-                        val unreadChats = chatPreviewDao.getUnreadChats()
-                        var totalMessages: Int = 0
-
-                        unreadChats.forEach {
-                            totalMessages += it.unread
-                        }
-
-                        groupSummaryNotification.setStyle(
-                            NotificationCompat.InboxStyle().setSummaryText(
-                                "You have $totalMessages unread messages from ${unreadChats.size} Chats"
-                            )
-                        )
-
-                        with(NotificationManagerCompat.from(application.baseContext)) {
-                            notify(unread.first().dbId.toInt(), notification.build())
-                            notify(-200, groupSummaryNotification.build())
-                        }
-                    }
+                    WorkManager.getInstance(application).enqueueUniqueWork(
+                        messagePayload!!.message.id!!,
+                        ExistingWorkPolicy.KEEP, messageWorkRequest.build()
+                    )
                 }
             }
             return requireNotNull(socket)

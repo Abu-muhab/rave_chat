@@ -1,14 +1,10 @@
 package com.abumuhab.chat.models
 
-import androidx.annotation.Nullable
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
+import androidx.room.*
 import java.util.*
 
 
-@Entity(tableName = "messages_table")
+@Entity(tableName = "messages_table",indices = [Index(value = ["id"],unique = true)])
 @TypeConverters(DateConverter::class)
 data class Message (
     @PrimaryKey(autoGenerate = true) var dbId: Long = 0L,
@@ -16,7 +12,8 @@ data class Message (
     var time: Date?,
     var from: String,
     var to: String?,
-    var read: Boolean?=true
+    var read: Boolean?=true,
+    var id: String?
 )
 
 

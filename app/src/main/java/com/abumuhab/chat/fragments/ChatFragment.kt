@@ -61,6 +61,7 @@ class ChatFragment : Fragment() {
                     Calendar.getInstance().time,
                     viewModel.userData.value!!.user.userName,
                     viewModel.friend.userName!!,
+                    null,
                     null
                 )
             )

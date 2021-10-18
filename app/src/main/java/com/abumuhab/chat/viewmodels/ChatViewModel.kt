@@ -1,6 +1,7 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.*
 import com.abumuhab.chat.database.ChatPreviewDao
 import com.abumuhab.chat.database.MessageDao
@@ -29,7 +30,7 @@ class ChatViewModel(
     var observer: androidx.lifecycle.Observer<Message>? = null
 
     var messages = MutableLiveData<ArrayList<Message>>()
-    var latestMessage = MutableLiveData<Message>()
+    private var latestMessage = MutableLiveData<Message>()
 
     init {
         messages.value = arrayListOf()
@@ -37,12 +38,49 @@ class ChatViewModel(
 
     private suspend fun markMessagesAsRead(userData: UserData) {
         //chat opened. mark all unread messages as read
-        messageDao.getUnreadMessages(userData.user.userName, friend.userName!!)
-            .forEach {
-                it.read = true
-                messageDao.update(it)
-            }
+        messageDao.getUnreadMessages(userData.user.userName, friend.userName!!).apply {
+            val messages = this
 
+            //remove the notification and summary notification if in notification tray
+            if (messages.isNotEmpty()) {
+                with(NotificationManagerCompat.from(application)) {
+                    try {
+                        //mark messages as read
+                        messages.forEach {
+                            it.read = true
+                            messageDao.update(it)
+                        }
+
+                        //remove notification for this chat if displayed
+                        this.cancel(messages.first().dbId.toInt())
+
+
+                        //update chat preview
+                        val preview = chatPreviewDao.findChatPreview(messages.first().from)
+                        if (preview.isNotEmpty()) {
+                            preview.first().unread = 0
+                            chatPreviewDao.update(preview.first())
+                        }
+
+                        //remove summary notification if current chat's notification is last
+                        val unreadChats = chatPreviewDao.getUnreadChats()
+                        var totalMessages = 0
+
+                        unreadChats.forEach {
+                            totalMessages += it.unread
+                        }
+
+                        if (totalMessages == 0) {
+                            this.cancel(-200)
+                        }
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+        }
+
+
+        //update the chat preview and set unread messages to 0
         if (userData.user.userName != friend.userName) {
             chatPreviewDao.findChatPreview(friend.userName).apply {
                 if (this.isNotEmpty()) {
@@ -53,7 +91,7 @@ class ChatViewModel(
         }
     }
 
-    fun listenForNewMessages(lifecycleOwner: LifecycleOwner, userData: UserData) {
+    private fun listenForNewMessages(lifecycleOwner: LifecycleOwner, userData: UserData) {
         viewModelScope.launch {
             observer = androidx.lifecycle.Observer<Message> {
                 if (it != null && !messages.value!!.contains(it)) {
@@ -61,24 +99,51 @@ class ChatViewModel(
                     messages.value!!.add(it)
                     messages.value = messages.value
 
-                    //mark as read
-                    it.read = true
-                    viewModelScope.launch {
-                        messageDao.update(it)
-                        if (it.from != userData.user.userName) {
-                            val preview = chatPreviewDao.findChatPreview(it.from)
-                            if (preview.isNotEmpty()) {
-                                preview.first().lastMessage = it.content
-                                preview.first().unread =
-                                    messageDao.getUnreadMessages(
-                                        userData.user.userName,
-                                        it.from
-                                    ).size
 
-                                chatPreviewDao.update(preview.first())
+                    Timer().schedule(object : TimerTask() {
+                        override fun run() {
+                            viewModelScope.launch {
+                                //mark as read
+                                it.read = true
+                                messageDao.update(it)
+                                if (it.from != userData.user.userName) {
+                                    val preview = chatPreviewDao.findChatPreview(it.from)
+                                    if (preview.isNotEmpty()) {
+                                        preview.first().lastMessage = it.content
+                                        preview.first().unread =
+                                            messageDao.getUnreadMessages(
+                                                userData.user.userName,
+                                                it.from
+                                            ).size
+
+                                        chatPreviewDao.update(preview.first())
+                                    }
+                                }
+
+                                //remove the notification and summary notification if in notification tray
+                                with(NotificationManagerCompat.from(application)) {
+                                    try {
+                                        //remove notification for this chat
+                                        this.cancel(it.dbId.toInt())
+
+
+                                        //remove summary notification of current chat's notification is last
+                                        val unreadChats = chatPreviewDao.getUnreadChats()
+                                        var totalMessages = 0
+
+                                        unreadChats.forEach {
+                                            totalMessages += it.unread
+                                        }
+
+                                        if (totalMessages == 0) {
+                                            this.cancel(-200)
+                                        }
+                                    } catch (e: Exception) {
+                                    }
+                                }
                             }
                         }
-                    }
+                    }, 500)
                 }
             }
             messageDao.getLatestMessage(
@@ -89,17 +154,16 @@ class ChatViewModel(
     }
 
 
-    suspend fun loadMessages(userData: UserData) {
+    private suspend fun loadMessages(userData: UserData) {
         val array = arrayListOf<Message>()
         array.addAll(
             messageDao.getMessages(
                 userData.user.userName,
                 friend.userName.toString()
-            ).toList()
+            ).toList().distinct()
         )
         if (array.size > 0) {
             array.reverse()
-            array.removeLast()
             messages.value = array
         }
     }

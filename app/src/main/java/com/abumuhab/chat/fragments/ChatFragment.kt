@@ -66,10 +66,8 @@ class ChatFragment : Fragment() {
 
             adapter.userData = userData
 
-            viewModel.connectToChatSocket(userData!!, requireActivity())
-
             viewModel.messages.observe(viewLifecycleOwner) {
-                (binding.messageList.adapter as ChatAdapter).submitList(it.toList()) {
+                (binding.messageList.adapter as ChatAdapter).submitList(it.toList().distinct()) {
                     (binding.messageList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
                         it.size - 1,
                         0
@@ -83,7 +81,7 @@ class ChatFragment : Fragment() {
                         0L,
                         binding.messageBox.text.toString(),
                         Calendar.getInstance().time,
-                        userData.user.userName,
+                        userData!!.user.userName,
                         viewModel.friend.userName!!,
                         null,
                         null
@@ -91,7 +89,7 @@ class ChatFragment : Fragment() {
                     userData
                 )
                 binding.messageBox.text!!.clear()
-                hideSoftKeyboard(requireContext(), binding.messageBox)
+//                hideSoftKeyboard(requireContext(), binding.messageBox)
             }
         }
 

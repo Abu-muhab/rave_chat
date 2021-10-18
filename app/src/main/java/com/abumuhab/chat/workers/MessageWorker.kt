@@ -24,7 +24,7 @@ import java.util.*
 class MessageWorker(appContext: Context, private val workerParameters: WorkerParameters) :
     CoroutineWorker(appContext, workerParameters) {
     override suspend fun doWork(): Result {
-        try{
+        try {
             val userDao = UserDatabase.getInstance(applicationContext).userDataDao
             val chatPreviewDao = UserDatabase.getInstance(applicationContext).chatPreviewDao
             val messageDao = UserDatabase.getInstance(applicationContext).messageDao
@@ -38,12 +38,17 @@ class MessageWorker(appContext: Context, private val workerParameters: WorkerPar
             val messagePayload: ChatSocketIO.MessagePayload? =
                 jsonAdapter.fromJson(workerParameters.inputData.getString("data").toString())
 
+            if (messageDao.getMessage(messagePayload!!.message.id!!) != null) return Result.success()
+
             val chatPreviews =
-                chatPreviewDao.findChatPreview(messagePayload!!.message.from)
+                chatPreviewDao.findChatPreview(messagePayload.message.from)
             var unread = messageDao.getUnreadMessages(
-                userData!!.user.userName,
+                userData.user.userName,
                 messagePayload.message.from
             )
+
+            messagePayload.message.read = false
+            messageDao.insert(messagePayload.message)
 
             if (chatPreviews.isEmpty()) {
                 val chatPreview = ChatPreview(
@@ -59,9 +64,6 @@ class MessageWorker(appContext: Context, private val workerParameters: WorkerPar
                 chatPreviews.first().unread = unread.size + 1
                 chatPreviewDao.update(chatPreviews.first())
             }
-
-            messagePayload.message.read = false
-            messageDao.insert(messagePayload.message)
 
             unread = messageDao.getUnreadMessages(
                 userData.user.userName,
@@ -97,7 +99,7 @@ class MessageWorker(appContext: Context, private val workerParameters: WorkerPar
                     .setGroup("chats")
 
             val unreadChats = chatPreviewDao.getUnreadChats()
-            var totalMessages: Int = 0
+            var totalMessages = 0
 
             unreadChats.forEach {
                 totalMessages += it.unread
@@ -115,9 +117,8 @@ class MessageWorker(appContext: Context, private val workerParameters: WorkerPar
             }
 
             return Result.success()
-        }catch (e:Exception){
-            Log.e("MESSAGE_WORKER",e.message.toString())
-            return  Result.failure()
+        } catch (e: Exception) {
+            return Result.failure()
         }
     }
 

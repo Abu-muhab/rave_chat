@@ -21,4 +21,7 @@ interface MessageDao {
 
     @Query("SELECT * FROM  messages_table WHERE (`from`=:currentUser AND `to`=:friend) OR (`from`=:friend AND `to`=:currentUser) ORDER BY time DESC LIMIT 1")
     fun getLatestMessage(currentUser: String, friend: String): LiveData<Message>
+
+    @Query("SELECT * FROM messages_table WHERE id=:id LIMIT 1")
+    suspend fun getMessage(id:String): Message?
 }

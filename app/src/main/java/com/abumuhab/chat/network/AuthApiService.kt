@@ -8,7 +8,7 @@ import retrofit2.http.*
 
 
 const val BASE_URL = "https://rave-chat-api.herokuapp.com/"
-const val BASE_URL_TEST = "http://192.168.43.91:4000/"
+//const val BASE_URL = "http://192.168.43.91:4000/"
 
 //private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 

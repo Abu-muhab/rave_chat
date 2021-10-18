@@ -84,7 +84,7 @@ class ChatFragment : Fragment() {
                         userData!!.user.userName,
                         viewModel.friend.userName!!,
                         null,
-                        null
+                        UUID.randomUUID().toString()
                     ),
                     userData
                 )

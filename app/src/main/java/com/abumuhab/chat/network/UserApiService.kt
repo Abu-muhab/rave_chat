@@ -15,7 +15,7 @@ private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 private val retrofit: Retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
 //    .addConverterFactory(ScalarsConverterFactory.create())
-    .baseUrl(BASE_URL_TEST)
+    .baseUrl(BASE_URL)
     .build()
 
 interface UserApiService {

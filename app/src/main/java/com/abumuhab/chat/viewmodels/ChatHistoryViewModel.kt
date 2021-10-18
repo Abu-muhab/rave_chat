@@ -48,13 +48,25 @@ class ChatHistoryViewModel(
         }
     }
 
-    private fun connectToChatSocket() {
+    fun connectToChatSocket() {
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     socket = ChatSocketIO.getInstance(_userData.value!!, it.result, application)
                     if (!socket!!.connected()) {
                         socket!!.connect()
+                    }
+                }
+            }
+    }
+
+    fun disconnectSocket() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    socket = ChatSocketIO.getInstance(_userData.value!!, it.result, application)
+                    if (socket!!.connected()) {
+                        socket!!.disconnect()
                     }
                 }
             }

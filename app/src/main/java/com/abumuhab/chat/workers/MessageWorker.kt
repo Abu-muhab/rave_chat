@@ -93,8 +93,6 @@ class MessageWorker(appContext: Context, private val workerParameters: WorkerPar
             val groupSummaryNotification =
                 NotificationCompat.Builder(applicationContext, "chat")
                     .setSmallIcon(R.drawable.ic_baseline_chat_24)
-//                .setContentTitle(message.from)
-//                .setContentText(message.content)
                     .setGroupSummary(true)
                     .setGroup("chats")
 

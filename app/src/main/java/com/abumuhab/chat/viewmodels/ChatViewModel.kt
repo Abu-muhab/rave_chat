@@ -1,10 +1,7 @@
 package com.abumuhab.chat.viewmodels
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.abumuhab.chat.database.ChatPreviewDao
 import com.abumuhab.chat.database.MessageDao
 import com.abumuhab.chat.database.UserDataDao
@@ -31,43 +28,32 @@ class ChatViewModel(
     private var socket: Socket? = null
     var observer: androidx.lifecycle.Observer<Message>? = null
 
-    private val _userData = MutableLiveData<UserData?>()
-    val userData: LiveData<UserData?>
-        get() = _userData
-
     var messages = MutableLiveData<ArrayList<Message>>()
     var latestMessage = MutableLiveData<Message>()
 
     init {
         messages.value = arrayListOf()
-        getLoggedInUser()
     }
 
-    private fun getLoggedInUser() {
-        viewModelScope.launch {
-            _userData.value = userDataDao.getLoggedInUser()
-            connectToChatSocket()
-            loadMessages()
+    private suspend fun markMessagesAsRead(userData: UserData) {
+        //chat opened. mark all unread messages as read
+        messageDao.getUnreadMessages(userData.user.userName, friend.userName!!)
+            .forEach {
+                it.read = true
+                messageDao.update(it)
+            }
 
-            //chat opened. mark all unread messages as read
-            messageDao.getUnreadMessages(_userData.value!!.user.userName, friend.userName!!)
-                .forEach {
-                    it.read = true
-                    messageDao.update(it)
-                }
-
-            if (_userData.value!!.user.userName != friend.userName) {
-                chatPreviewDao.findChatPreview(friend.userName).apply {
-                    if (this.isNotEmpty()) {
-                        this.first().unread = 0
-                        chatPreviewDao.update(this.first())
-                    }
+        if (userData.user.userName != friend.userName) {
+            chatPreviewDao.findChatPreview(friend.userName).apply {
+                if (this.isNotEmpty()) {
+                    this.first().unread = 0
+                    chatPreviewDao.update(this.first())
                 }
             }
         }
     }
 
-    private fun listenForNewMessages() {
+    fun listenForNewMessages(lifecycleOwner: LifecycleOwner, userData: UserData) {
         viewModelScope.launch {
             observer = androidx.lifecycle.Observer<Message> {
                 if (it != null && !messages.value!!.contains(it)) {
@@ -79,13 +65,13 @@ class ChatViewModel(
                     it.read = true
                     viewModelScope.launch {
                         messageDao.update(it)
-                        if (it.from != _userData.value!!.user.userName) {
+                        if (it.from != userData.user.userName) {
                             val preview = chatPreviewDao.findChatPreview(it.from)
                             if (preview.isNotEmpty()) {
                                 preview.first().lastMessage = it.content
                                 preview.first().unread =
                                     messageDao.getUnreadMessages(
-                                        _userData.value!!.user.userName,
+                                        userData.user.userName,
                                         it.from
                                     ).size
 
@@ -96,41 +82,29 @@ class ChatViewModel(
                 }
             }
             messageDao.getLatestMessage(
-                userData.value!!.user.userName,
+                userData.user.userName,
                 friend.userName.toString()
-            ).observeForever(observer!!)
+            ).observe(lifecycleOwner, observer!!)
         }
     }
 
-    override fun onCleared() {
-        latestMessage.let {
-            if (observer !== null) {
-                it.removeObserver(observer!!)
-            }
-        }
-        super.onCleared()
-    }
 
-
-    private fun loadMessages() {
-        viewModelScope.launch {
-            val array = arrayListOf<Message>()
-            array.addAll(
-                messageDao.getMessages(
-                    _userData.value!!.user.userName,
-                    friend.userName.toString()
-                ).toList()
-            )
-            if (array.size > 0) {
-                array.reverse()
-                array.removeLast()
-                messages.value = array
-            }
-            listenForNewMessages()
+    suspend fun loadMessages(userData: UserData) {
+        val array = arrayListOf<Message>()
+        array.addAll(
+            messageDao.getMessages(
+                userData.user.userName,
+                friend.userName.toString()
+            ).toList()
+        )
+        if (array.size > 0) {
+            array.reverse()
+            array.removeLast()
+            messages.value = array
         }
     }
 
-    fun sendMessage(message: Message) {
+    fun sendMessage(message: Message, userData: UserData) {
         viewModelScope.launch {
             message.read = true
             messageDao.insert(message)
@@ -141,7 +115,7 @@ class ChatViewModel(
                 preview.first().lastMessage = message.content
                 preview.first().unread =
                     messageDao.getUnreadMessages(
-                        _userData.value!!.user.userName,
+                        userData.user.userName,
                         friend.userName
                     ).size
                 chatPreviewDao.update(preview.first())
@@ -173,15 +147,37 @@ class ChatViewModel(
         }
     }
 
-    private fun connectToChatSocket() {
+    suspend fun connectToChatSocket(userData: UserData, lifecycleOwner: LifecycleOwner) {
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    socket = ChatSocketIO.getInstance(_userData.value!!, it.result, application)
+                    socket = ChatSocketIO.getInstance(userData, it.result, application)
                     if (!socket!!.connected()) {
                         socket!!.connect()
                     }
                 }
             }
+
+        loadMessages(userData)
+        listenForNewMessages(lifecycleOwner, userData)
+        markMessagesAsRead(userData)
+    }
+
+    fun disconnectSocket(lifecycleOwner: LifecycleOwner, userData: UserData) {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    socket = ChatSocketIO.getInstance(userData, it.result, application)
+                    if (socket!!.connected()) {
+                        socket!!.disconnect()
+                    }
+                }
+            }
+
+        //stop listening for new messages
+        messageDao.getLatestMessage(
+            userData.user.userName,
+            friend.userName.toString()
+        ).removeObservers(lifecycleOwner)
     }
 }

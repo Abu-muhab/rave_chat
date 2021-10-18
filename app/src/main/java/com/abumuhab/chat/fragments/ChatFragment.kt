@@ -2,6 +2,7 @@ package com.abumuhab.chat.fragments
 
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -52,23 +53,6 @@ class ChatFragment : Fragment() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(ChatViewModel::class.java)
 
 
-
-        binding.sendButton.setOnClickListener {
-            viewModel.sendMessage(
-                Message(
-                    0L,
-                    binding.messageBox.text.toString(),
-                    Calendar.getInstance().time,
-                    viewModel.userData.value!!.user.userName,
-                    viewModel.friend.userName!!,
-                    null,
-                    null
-                )
-            )
-            binding.messageBox.text!!.clear()
-            hideSoftKeyboard(requireContext(), binding.messageBox)
-        }
-
         binding.friend = friend
 
         val adapter = ChatAdapter(null)
@@ -82,6 +66,8 @@ class ChatFragment : Fragment() {
 
             adapter.userData = userData
 
+            viewModel.connectToChatSocket(userData!!, requireActivity())
+
             viewModel.messages.observe(viewLifecycleOwner) {
                 (binding.messageList.adapter as ChatAdapter).submitList(it.toList()) {
                     (binding.messageList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
@@ -90,6 +76,23 @@ class ChatFragment : Fragment() {
                     )
                 }
             }
+
+            binding.sendButton.setOnClickListener {
+                viewModel.sendMessage(
+                    Message(
+                        0L,
+                        binding.messageBox.text.toString(),
+                        Calendar.getInstance().time,
+                        userData.user.userName,
+                        viewModel.friend.userName!!,
+                        null,
+                        null
+                    ),
+                    userData
+                )
+                binding.messageBox.text!!.clear()
+                hideSoftKeyboard(requireContext(), binding.messageBox)
+            }
         }
 
         binding.viewModel = viewModel
@@ -97,5 +100,23 @@ class ChatFragment : Fragment() {
         binding.lifecycleOwner = this
 
         return binding.root
+    }
+
+    override fun onPause() {
+        lifecycleScope.launch {
+            val userDao = UserDatabase.getInstance(requireContext()).userDataDao
+            val userData = userDao.getLoggedInUser()
+            viewModel.disconnectSocket(requireActivity(), userData!!)
+        }
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            val userDao = UserDatabase.getInstance(requireContext()).userDataDao
+            val userData = userDao.getLoggedInUser()
+            viewModel.connectToChatSocket(userData!!, requireActivity())
+        }
     }
 }

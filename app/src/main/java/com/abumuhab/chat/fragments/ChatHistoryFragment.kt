@@ -64,4 +64,14 @@ class ChatHistoryFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onPause() {
+        viewModel.disconnectSocket()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.connectToChatSocket()
+    }
 }

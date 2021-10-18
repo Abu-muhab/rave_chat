@@ -16,7 +16,7 @@ const val BASE_URL_TEST = "http://192.168.43.91:4000/"
 private val retrofit: Retrofit = Retrofit.Builder()
 //    .addConverterFactory(MoshiConverterFactory.create(moshi))
     .addConverterFactory(ScalarsConverterFactory.create())
-    .baseUrl(BASE_URL_TEST)
+    .baseUrl(BASE_URL)
     .build()
 
 interface AuthApiService {
@@ -52,6 +52,6 @@ class AuthErrorResponse(
     val message: String
 )
 
-class AuthPayload(val email: String, val password: String)
+class AuthPayload(val email: String, val password: String,val name:String)
 
 class SnapAuthPayload(val snapId:String,val avatarUrl: String, val displayName: String)

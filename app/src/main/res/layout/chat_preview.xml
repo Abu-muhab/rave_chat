@@ -45,18 +45,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/linearLayout4"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{preview.friend.userName}"
-                    android:textColor="@color/primary"
-                    android:textStyle="bold"
+                    android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textView6"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Jason Monroe" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:text="@{preview.friend.displayName}"
+                        android:textColor="@color/accent"
+                        android:textStyle="bold"
+                        android:maxLength="30"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        tools:text="Abdulmalik" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{preview.friend.userName}"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold"
+                        android:ellipsize="end"
+                        android:maxLength="30"
+                        android:maxLines="1"
+                        tools:text="\@monroe" />
+                </LinearLayout>
 
                 <TextView
+                    android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
@@ -64,6 +89,8 @@
                     android:textColor="@color/darkGrey"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/linearLayout4"
                     tools:text="12:34" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 

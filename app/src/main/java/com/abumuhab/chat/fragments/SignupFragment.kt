@@ -51,7 +51,7 @@ class SignupFragment : Fragment() {
                 val variables = mapOf<String, Any>()
                 viewModel.setShowSnapchatSpinner(true)
                 lifecycleScope.launch {
-                    try{
+                    try {
                         SnapLogin.fetchUserData(
                             requireContext(),
                             query,
@@ -74,8 +74,8 @@ class SignupFragment : Fragment() {
                                     viewModel.setShowSnapchatSpinner(false)
                                 }
                             })
-                    }catch (exception:Exception){
-                        Log.e("MSG",exception.message.toString())
+                    } catch (exception: Exception) {
+                        Log.e("MSG", exception.message.toString())
                     }
                 }
             }
@@ -120,7 +120,8 @@ class SignupFragment : Fragment() {
                 lifecycleScope.launch {
                     signup(
                         binding.emailField.text.toString().trim(),
-                        binding.passwordField.text.toString()
+                        binding.passwordField.text.toString(),
+                        binding.nameField.text.toString().trim()
                     )
                 }
             }
@@ -156,6 +157,13 @@ class SignupFragment : Fragment() {
             removeEditTextError(binding.emailFieldLayout)
         }
 
+        if (binding.nameField.text!!.isEmpty()) {
+            showEditTextError(binding.nameFieldLayout, "Enter name")
+            formIsValid = false
+        } else {
+            removeEditTextError(binding.nameFieldLayout)
+        }
+
         if (binding.passwordField.text!!.length < 6) {
             showEditTextError(binding.passwordFieldLayout, "Password too short")
             formIsValid = false
@@ -166,8 +174,8 @@ class SignupFragment : Fragment() {
         return formIsValid
     }
 
-    private fun signup(email: String, password: String) {
-        val payload = AuthPayload(email, password)
+    private fun signup(email: String, password: String, name: String) {
+        val payload = AuthPayload(email, password, name)
         val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
         val jsonAdapter: JsonAdapter<AuthPayload> = moshi.adapter(AuthPayload::class.java)
         AuthApi.retrofitService.signup(jsonAdapter.toJson(payload)).enqueue(
@@ -198,14 +206,14 @@ class SignupFragment : Fragment() {
     }
 
     private fun snapSignup(snapId: String, avatarUrl: String, displayName: String) {
-        Log.i("HERE","GOT HERE")
+        Log.i("HERE", "GOT HERE")
         val payload = SnapAuthPayload(snapId, avatarUrl, displayName)
         val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
         val jsonAdapter: JsonAdapter<SnapAuthPayload> = moshi.adapter(SnapAuthPayload::class.java)
         AuthApi.retrofitService.snapAuth(jsonAdapter.toJson(payload)).enqueue(
             object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
-                    Log.i("HERE",response.body().toString())
+                    Log.i("HERE", response.body().toString())
                     if (response.code() == 200) {
                         val jsonAdapter: JsonAdapter<AuthSuccessResponse> =
                             moshi.adapter(AuthSuccessResponse::class.java)
@@ -223,7 +231,7 @@ class SignupFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
-                    Log.i("HERE",t.message.toString())
+                    Log.i("HERE", t.message.toString())
                     viewModel.setShowSnapchatSpinner(false)
                 }
 

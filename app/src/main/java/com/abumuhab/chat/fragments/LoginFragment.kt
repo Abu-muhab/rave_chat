@@ -168,7 +168,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun login(email: String, password: String) {
-        val payload = AuthPayload(email, password)
+        val payload = AuthPayload(email, password,"")
         val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
         val jsonAdapter: JsonAdapter<AuthPayload> = moshi.adapter(AuthPayload::class.java)
         AuthApi.retrofitService.login(jsonAdapter.toJson(payload)).enqueue(

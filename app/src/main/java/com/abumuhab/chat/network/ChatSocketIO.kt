@@ -36,7 +36,7 @@ class ChatSocketIO {
                         "fcmToken" to fcmToken
                     )
                 ).build()
-                socket = IO.socket(URI.create(BASE_URL_TEST + "chat"), options)
+                socket = IO.socket(URI.create(BASE_URL + "chat"), options)
 
                 socket!!.on("message") {
                     val messageWorkRequest = OneTimeWorkRequest.Builder(MessageWorker::class.java)

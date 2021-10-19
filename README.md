@@ -4,7 +4,7 @@
 ## About the project
 Rave chat is a minimal chat application with basic peer to peer messaging. 
 
-### Built with
+## Built with
 - Nodejs
 - Firebase
 - Kotlin
@@ -15,3 +15,10 @@ Rave chat is a minimal chat application with basic peer to peer messaging.
 - Snapchat Bitmoji AVI
 - Real time chat
 - Chat Notifications
+
+## UI screens
+### Authentication Screens
+
+| Signup | Login |
+| ----------- | ----------- |
+| ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-152321_Chat.jpg?alt=media&token=1a356a8c-cd43-4223-8cb8-29ee99e258b5) | ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-152331_Chat.jpg?alt=media&token=663dbc52-a216-459e-9b02-a4289bbdee76) | 

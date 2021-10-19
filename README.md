@@ -2,7 +2,9 @@
 ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screen_Recording_20210914-144353_1.gif?alt=media&token=73f4375b-7172-4941-8e11-029122c00a97)
 
 ## About the project
-Rave chat is a minimal chat application with basic peer to peer messaging. 
+Rave chat is a minimal chat application with basic peer to peer messaging (Just another portfolio projcet 🙄).
+
+Get it on [playstore](https://play.google.com/store/apps/details?id=com.abumuhab.chat) and play around with it 
 
 ## Built with
 - Nodejs

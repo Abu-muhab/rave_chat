@@ -22,3 +22,9 @@ Rave chat is a minimal chat application with basic peer to peer messaging.
 | Signup | Login |
 | ----------- | ----------- |
 | ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-152321_Chat.jpg?alt=media&token=1a356a8c-cd43-4223-8cb8-29ee99e258b5) | ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-152331_Chat.jpg?alt=media&token=663dbc52-a216-459e-9b02-a4289bbdee76) | 
+
+### Chat Screens
+
+| Chat history | Chat |
+| ----------- | ----------- |
+| ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-153140_Chat.jpg?alt=media&token=356da252-a8dc-4e50-bfef-c5b569cb9bf2) | ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-153332_Chat.jpg?alt=media&token=eb8bfa40-2257-4124-ae61-151e0e6b54b1) | 

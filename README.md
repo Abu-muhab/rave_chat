@@ -16,6 +16,14 @@ Rave chat is a minimal chat application with basic peer to peer messaging.
 - Real time chat
 - Chat Notifications
 
+## Future updates
+- Voice mesages
+- Image and Video sharing
+- Group chats
+
+## Backend
+Link to Rave chat's api build with node can be found [here](https://github.com/Abu-muhab/ravechat_api)
+
 ## UI screens
 ### Authentication Screens
 
@@ -25,6 +33,7 @@ Rave chat is a minimal chat application with basic peer to peer messaging.
 
 ### Chat Screens
 
-| Chat history | Chat | Find Friends |
-| ----------- | ----------- | ----------- |
-| ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-153140_Chat.jpg?alt=media&token=356da252-a8dc-4e50-bfef-c5b569cb9bf2) | ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-153332_Chat.jpg?alt=media&token=eb8bfa40-2257-4124-ae61-151e0e6b54b1) | ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-153925_Chat.jpg?alt=media&token=26658d3f-e03c-4e44-b0c0-bf31eb21de8d) | 
+| Chat history | Chat |
+| ----------- | ----------- |
+| ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-153140_Chat.jpg?alt=media&token=356da252-a8dc-4e50-bfef-c5b569cb9bf2) | ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-153332_Chat.jpg?alt=media&token=eb8bfa40-2257-4124-ae61-151e0e6b54b1) |
+| ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-153925_Chat.jpg?alt=media&token=26658d3f-e03c-4e44-b0c0-bf31eb21de8d) | ![alt text](https://firebasestorage.googleapis.com/v0/b/ravechat-39c2e.appspot.com/o/Screenshot_20211019-154623_One%20UI%20Home.jpg?alt=media&token=6ab58edc-6c21-4ba4-b9a3-56aea95b06f3) |

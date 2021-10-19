@@ -107,6 +107,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    android:maxLines="1"
                     tools:text="Hey there hd dhc" />
 
                 <LinearLayout
